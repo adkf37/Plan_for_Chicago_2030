@@ -97,3 +97,48 @@ A comprehensive strategy to redesign Chicago’s land use and transportation, de
 
 *End of Project Outline*
 
+---
+
+## Potential Enhancements and Future Improvements
+
+- **Data & Analytical Depth**
+  - Incorporate climate resilience datasets (heat islands, flood risk, tree canopy) to evaluate environmental justice outcomes alongside development proposals.
+  - Add longitudinal assessor and rent registry data to track displacement pressures and calibrate anti-displacement strategies.
+  - Integrate job accessibility metrics (30/45-minute transit sheds) to quantify economic opportunity gains.
+  - Model greenhouse gas emissions impacts using mode share shifts and energy intensity assumptions for proposed land uses.
+  - Include scenario comparison dashboards (status quo, moderate reform, ambitious transformation) with configurable parameters for sensitivity testing.
+
+- **Transportation Modeling Enhancements**
+  - Couple transit proposals with GTFS feeds to estimate ridership, travel time savings, and service frequency requirements.
+  - Simulate micromobility networks (bike share, scooters) and protected bike lane expansions to assess first/last-mile connectivity.
+  - Test curb management strategies (delivery zones, ride-hailing pick-up areas) to understand impacts on traffic flow and street life.
+  - Develop equity-focused mobility indicators, such as transit access for low-income households and ADA-compliant infrastructure coverage.
+
+- **Interactive Map & UI Features**
+  - Provide story map tours with guided narratives that automatically adjust layer visibility and camera position.
+  - Offer parcel-level comparison charts that visualize current vs. proposed density, value, and zoning allowances.
+  - Enable user-submitted feedback pins or surveys directly on the map to crowdsource local knowledge.
+  - Add accessibility features such as keyboard navigation, high-contrast mode, and screen-reader-friendly descriptions for map layers.
+  - Implement mobile-first gestures (swipeable before/after map slider) for improved smartphone usability.
+
+- **Website Content & Storytelling**
+  - Introduce interactive calculators that let residents estimate housing affordability or tax impacts under different scenarios.
+  - Expand policy sections with timelines for phased implementation and governance responsibilities.
+  - Highlight community case studies through multimedia content (short videos, audio interviews) embedded alongside data visualizations.
+  - Publish transparent methodology notebooks or reproducible pipelines linking code to narrative claims.
+
+- **Community Engagement & Collaboration**
+  - Create an open data portal with downloadable layers, metadata, and change logs to foster civic tech participation.
+  - Schedule virtual workshops and mapathons, embedding live streaming or event information within the site.
+  - Establish contribution guidelines and issue templates in the repository to streamline community feature requests and bug reports.
+  - Partner with local organizations to co-develop neighborhood-specific overlays (cultural assets, social services, community plans).
+
+- **Technical Infrastructure & Maintenance**
+  - Automate data refreshes via scheduled ETL pipelines (GitHub Actions, cron jobs) that validate and deploy updated tiles.
+  - Implement performance monitoring and analytics (Core Web Vitals, map interaction metrics) to guide iterative UX improvements.
+  - Add comprehensive unit/integration tests for data processing scripts to ensure reproducibility across updates.
+  - Containerize the development environment (Docker) to simplify onboarding and ensure consistent dependencies.
+  - Explore progressive web app (PWA) capabilities for offline map exploration during community meetings without reliable internet.
+
+---
+
