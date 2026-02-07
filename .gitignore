@@ -48,6 +48,30 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
+# --- Project-specific ---
+
+# Large raw data files (download via scripts or place manually)
+data/raw/
+data/geojson/
+
+# Processed / generated data outputs
+data/processed/
+
+# Track reference data (small, hand-curated)
+!data/reference/
+!data/reference/**
+
+# Generated outputs
+maps/*.html
+reports/
+analysis_results/
+cache/
+
+# Legacy root-level data files (should be moved to data/)
+*.csv
+*.geojson
+!data/reference/*.csv
+
 # Jupyter Notebook
 .ipynb_checkpoints
 

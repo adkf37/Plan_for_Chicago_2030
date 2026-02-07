@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan for Chicago 2030</title>
+  <style>
+    :root { --brand: #003366; --accent: #cf2920; --bg: #f9f9f9; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: "Segoe UI", system-ui, sans-serif; color:#333; background:var(--bg); }
+    header { background:var(--brand); color:#fff; padding:2rem 1rem; text-align:center; }
+    header h1 { font-size:2.4rem; margin-bottom:.5rem; }
+    header p { font-size:1.1rem; opacity:.85; }
+    nav { background:#002244; display:flex; justify-content:center; gap:1rem; padding:.6rem; }
+    nav a { color:#ccc; text-decoration:none; font-size:.95rem; } nav a:hover { color:#fff; }
+    .container { max-width:960px; margin:2rem auto; padding:0 1rem; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.08);
+            margin-bottom:1.5rem; padding:1.5rem; }
+    .card h2 { color:var(--brand); margin-bottom:.5rem; }
+    .card ul { padding-left:1.2rem; }
+    .card li { margin:.4rem 0; }
+    footer { text-align:center; padding:2rem; font-size:.85rem; color:#777; }
+    .status { display:inline-block; padding:2px 8px; border-radius:4px; font-size:.8rem; font-weight:600; }
+    .status.wip { background:#fff3cd; color:#856404; }
+    .status.done { background:#d4edda; color:#155724; }
+    .status.todo { background:#f8d7da; color:#721c24; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Plan for Chicago 2030</h1>
+  <p>Data-driven analysis of Chicago zoning, property values &amp; transit-oriented development</p>
+</header>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#maps">Maps</a>
+  <a href="#analysis">Analysis</a>
+  <a href="#backlog">Backlog</a>
+</nav>
+
+<div class="container">
+
+  <section id="overview" class="card">
+    <h2>Project Overview</h2>
+    <p>This project explores how zoning changes along Chicago&rsquo;s transit corridors
+       could affect property values, housing density, and community development outcomes
+       through 2030 and beyond.</p>
+    <ul>
+      <li>Scrape &amp; integrate Cook County Assessor, Chicago zoning, CTA and census data</li>
+      <li>Model upzoning scenarios and value uplift per parcel</li>
+      <li>Publish interactive maps and a public-facing policy brief</li>
+    </ul>
+  </section>
+
+  <section id="maps" class="card">
+    <h2>Interactive Maps</h2>
+    <p>Maps are generated via Folium and will be embedded here once the data pipeline
+       is fully running. Placeholder links:</p>
+    <ul>
+      <li><a href="maps/chicago_zoning_map.html">City-wide Zoning Map</a></li>
+      <li><a href="maps/zoning_value_impact_map.html">Value Impact Heatmap</a></li>
+      <li><a href="maps/zoning_comparison_map.html">Upzoning Scenario Comparison</a></li>
+      <li><a href="maps/chicago_interactive_map.html">Multi-layer Interactive Map</a></li>
+    </ul>
+  </section>
+
+  <section id="analysis" class="card">
+    <h2>Key Analysis Modules</h2>
+    <ul>
+      <li><strong>Historical Appreciation</strong> &mdash; 25+ years of assessed-value trends by zone type</li>
+      <li><strong>Upzoning Uplift Model</strong> &mdash; scenario-based FAR increases &amp; value projections</li>
+      <li><strong>Transit Proximity</strong> &mdash; CTA L-station proximity scoring (<em>planned</em>)</li>
+      <li><strong>Equity Lens</strong> &mdash; displacement risk, anti-gentrification overlays (<em>planned</em>)</li>
+    </ul>
+  </section>
+
+  <section id="backlog" class="card">
+    <h2>Backlog / Epics</h2>
+    <p>Full backlog lives in <code>backlog/</code>. Summary:</p>
+    <ol>
+      <li>Repo &amp; Tooling Setup <span class="status done">DONE</span></li>
+      <li>Data Ingestion Pipeline <span class="status wip">WIP</span></li>
+      <li>Zoning Analysis Engine <span class="status wip">WIP</span></li>
+      <li>Property Value Modelling <span class="status wip">WIP</span></li>
+      <li>Transit &amp; Walkability Scoring <span class="status todo">TODO</span></li>
+      <li>Interactive Map Platform <span class="status wip">WIP</span></li>
+      <li>Scenario Comparison Tool <span class="status wip">WIP</span></li>
+      <li>Public Website &amp; Policy Brief <span class="status todo">TODO</span></li>
+      <li>Testing, CI/CD &amp; Containerisation <span class="status todo">TODO</span></li>
+      <li>Community Engagement &amp; Outreach <span class="status todo">TODO</span></li>
+    </ol>
+  </section>
+
+</div>
+
+<footer>&copy; 2025 Plan for Chicago 2030 &mdash; Built with Python, GeoPandas &amp; Folium</footer>
+</body>
+</html>

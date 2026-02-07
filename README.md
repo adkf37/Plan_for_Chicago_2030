@@ -1,159 +1,144 @@
 # Plan for Chicago 2030
 
-A comprehensive urban planning analysis platform for visualizing and modeling Chicago's land use, zoning, transportation, and property values.
+A data-driven urban planning platform that visualises and models Chicago's
+zoning, property values, transit access, and development scenarios through an
+interactive web map and accompanying policy website.
 
-## 🎯 Project Overview
+## Project Overview
 
-This project creates interactive visualizations and analysis tools to support policy analysis and community engagement around Chicago's future development. It combines:
+| What | How |
+|------|-----|
+| Geospatial analysis | GeoPandas, Shapely, osmnx |
+| Interactive mapping | Folium → MapLibre GL JS (planned) |
+| Scenario modelling | Rule-based upzoning + historical appreciation rates |
+| Property values | Cook County Assessor data (1999–2025) |
+| Website | Static HTML/CSS/JS in `site/` (GitHub Pages) |
 
-- **Geospatial Data Analysis**: Property assessments, zoning districts, transit networks
-- **Interactive Mapping**: Web-based visualizations with detailed tooltips and legends
-- **Scenario Modeling**: Compare current vs. proposed upzoning and development scenarios
-- **Property Value Analysis**: Model impacts of zoning changes and transit proximity
+## Quick Start
 
-## 🗺️ Key Features
+```bash
+# 1. Clone & setup
+git clone <repo-url> && cd Plan_for_Chicago_2030
+cp .env.example .env            # add your Socrata token
+python -m venv .venv && .venv\Scripts\activate
+pip install -r requirements.txt
 
-### Zoning Analysis (NEW!)
-- **Interactive Zoning Map**: Explore Chicago's complete zoning districts with SimCity 2000-inspired colors
-- **Scenario Comparison**: Model and visualize upzoning impacts on development capacity
-- **Detailed Information**: FAR, building heights, density requirements for every zone
-- **Data Source**: Official Chicago zoning data (April 2025), simplified for web performance
+# 2. Download data
+python -m src.download_data     # parcels, assessments, zoning → data/geojson/
 
-### Property Value Mapping
-- **Parcel-Level Analysis**: Property values merged with geographic data
-- **Area Aggregation**: Calculate total assessed values for defined regions
-- **Interactive Visualization**: Click parcels to see detailed assessment information
+# 3. Generate maps
+python -m viz.visualize_zoning           # → maps/chicago_zoning_map.html
+python -m src.compare_zoning_scenarios   # → maps/zoning_comparison_map.html
+python -m src.analyze_area               # → maps/area_value_map.html
 
-### Transportation Network
-- **OSM Integration**: Street networks and transit routes
-- **Simulation Framework**: Placeholder for traffic modeling (SUMO/A-B Street)
-
-## 🚀 Quick Start
-
-### View Zoning Data
-
-```powershell
-# Create interactive zoning map
-python visualize_zoning.py
-
-# Open the generated map
-chicago_zoning_map.html
+# 4. Run tests
+pytest -q
 ```
 
-### Compare Upzoning Scenarios
+See [QUICK_START.md](QUICK_START.md) for the full uplift-analysis walkthrough.
 
-```powershell
-# Run scenario analysis (currently: RS-3 → RT-4 upzoning)
-python compare_zoning_scenarios.py
+## Repository Structure
 
-# Open results
-zoning_comparison_map.html
+```
+Plan_for_Chicago_2030/
+├── src/                    # Core data & analysis modules
+│   ├── config.py           # All paths, constants, API settings
+│   ├── data_utils.py       # Socrata API helpers
+│   ├── download_data.py    # Dataset downloader
+│   ├── analyze_area.py     # Area-level value analysis
+│   ├── download_historical.py
+│   ├── process_historical.py
+│   ├── improved_uplift_model.py
+│   ├── compare_zoning_scenarios.py
+│   ├── zoning_value_impact.py
+│   ├── zoning.py
+│   ├── property_value.py
+│   └── transportation.py
+├── viz/                    # Visualisation scripts
+│   ├── visualize_zoning.py
+│   ├── visualize_appreciation.py
+│   └── loading_data.py
+├── data/
+│   ├── raw/                # Large CSVs (gitignored)
+│   ├── geojson/            # Spatial data (gitignored)
+│   ├── processed/          # Analysis outputs (gitignored)
+│   └── reference/          # Small lookup tables (tracked)
+├── maps/                   # Generated HTML maps (gitignored)
+├── reports/visualizations/ # Generated charts (gitignored)
+├── site/                   # Public website (index.html)
+├── docker/                 # Dockerfile + docker-compose
+├── tests/                  # Pytest suite
+├── backlog/                # 10 epic-level to-do files
+├── .github/workflows/      # CI pipeline
+├── .env.example            # Template for secrets
+├── requirements.txt
+├── pyproject.toml
+├── CONTRIBUTING.md
+└── LICENSE (MIT)
 ```
 
-### Analyze Property Values
+## Data Files
 
-```powershell
-# Analyze a specific area (Near South Side)
-python analyze_area.py
+### Tracked in Git (`data/reference/`)
+- `zoning_codes.csv` — zone code definitions (FAR, max height, use type)
+- `upzoning_scenario_changes.csv` — upzoning rule definitions
 
-# Open results
-area_value_map.html
-```
+### Downloaded by scripts (gitignored)
+- Cook County parcel geometries & assessed values
+- Chicago zoning districts GeoJSON
+- Historical assessments (1999–2025)
+- Census tracts, CTA stations *(planned)*
 
-## 📊 Data Files
+## Backlog
 
-### Included
-- `chicago_zoning_2025.geojson` - Complete zoning districts (14.6MB)
-- `zoning_codes.csv` - Comprehensive zoning code definitions
-- `Plan_outline.md` - Full project vision and requirements
+The project roadmap lives in `backlog/` as 10 GitHub-Issues-style epics:
 
-### To Download (via scripts)
-- Cook County parcel geometries
-- Property assessment data
-- Census tracts
-- OpenStreetMap networks
+| # | Epic | Status |
+|---|------|--------|
+| 01 | Repo & Tooling Setup | Done |
+| 02 | Data Ingestion Pipeline | In Progress |
+| 03 | Zoning Analysis Engine | In Progress |
+| 04 | Property Value Modelling | In Progress |
+| 05 | Transit & Walkability Scoring | Not Started |
+| 06 | Interactive Map Platform | In Progress |
+| 07 | Scenario Comparison Tool | In Progress |
+| 08 | Public Website & Policy Brief | Not Started |
+| 09 | Testing, CI/CD & Containers | In Progress |
+| 10 | Community Engagement & Outreach | Not Started |
 
-## 🛠️ Key Scripts
+## Chicago Zoning Primer
 
-| Script | Purpose |
-|--------|---------|
-| `visualize_zoning.py` | Create city-wide interactive zoning map |
-| `compare_zoning_scenarios.py` | Model and compare upzoning scenarios |
-| `analyze_area.py` | Analyze property values in defined areas |
-| `download_data.py` | Fetch data from Cook County and Chicago APIs |
-| `loading_data.py` | Generate comprehensive city map with multiple layers |
+| Zone Type | Code Prefix | Color | FAR Range |
+|-----------|-------------|-------|-----------|
+| Single-Family | RS | Green | 0.5–0.9 |
+| Townhouse | RT | Green | 0.9–1.2 |
+| Multi-Unit | RM | Green | 1.5–4.4 |
+| Business | B | Blue | 1.2–5.0 |
+| Commercial/Mixed | C | Blue | 1.5–5.0 |
+| Manufacturing | M | Yellow | 1.2–2.0 |
+| Downtown | DX/DC/DR/DS | Blue/Green | 5.0–16.0 |
+| Planned Dev | PD | Red | varies |
+| Parks | — | Dark Green | — |
+| Transportation | T | Gray | — |
 
-## 📚 Understanding Chicago Zoning
+Density is encoded in the suffix: **RS-3** = FAR 0.9, **RM-6** = FAR 4.4.
 
-### Zone Types
-- **Residential (Green)**: RS (Single Family), RT (Townhouse), RM (Multi-Unit)
-- **Business/Commercial (Blue)**: B1-B3 (Neighborhood to Community Shopping)
-- **Manufacturing (Yellow)**: M1-M3 (Limited to Heavy Industry)
-- **Downtown (Blue/Green)**: DX, DC, DR, DS districts
-- **Special (Red/Gray/Dark Green)**: Planned Development, Transportation, Parks
+## Acknowledgements
 
-### Density Indicators
-Zone codes like RS-3, RM-5, or B1-2 include a number indicating Floor Area Ratio (FAR):
-- RS-3: FAR 0.9 (Single family, 2,500 sq ft min lot)
-- RT-4: FAR 1.2 (Townhouse, 1,000 sq ft/unit)
-- RM-5: FAR 2.0 (Mid-rise, 400 sq ft/unit)
-- RM-6: FAR 4.4 (High-rise, 300 sq ft/unit)
+- **Zoning Data**: [DataMade / Second City Zoning](https://github.com/datamade/second-city-zoning)
+- **Assessment Data**: Cook County Open Data Portal (Socrata)
+- **Geography**: OpenStreetMap, Chicago Data Portal
+- **Inspiration**: Burnham Plan of Chicago (1909), SimCity 2000
 
-## 🎨 Visualization Features
+## License
 
-### Color Coding
-Maps use intuitive colors inspired by SimCity 2000:
-- 🟢 Green: Residential zones
-- 🔵 Blue: Business, commercial, downtown
-- 🟡 Yellow: Manufacturing
-- 🔴 Red: Planned developments
-- 🌲 Dark Green: Parks and open space
-- ⬛ Gray: Transportation
+MIT — see [LICENSE](LICENSE).
 
-### Opacity Encoding
-Transparency indicates density - more opaque zones allow higher Floor Area Ratios (FAR)
+## Contributing
 
-### Interactive Elements
-- **Hover**: Quick zone code and district type
-- **Click**: Full details including FAR, max height, ordinance numbers
-- **Legend**: Comprehensive guide to zone types
-
-## 🔮 Upcoming Features
-
-- [ ] Parcel-zoning spatial joins in analyze_area.py
-- [ ] Transit-oriented development (TOD) scenarios
-- [ ] Property value uplift modeling based on zoning changes
-- [ ] GTFS transit data integration
-- [ ] Traffic simulation with SUMO or A/B Street
-- [ ] Demographic overlay analysis
-
-## 📖 Documentation
-
-See `WARP.md` for comprehensive development guidance including:
-- Data processing patterns
-- Architecture overview
-- Common workflows
-- Extensibility points
-
-## 🙏 Acknowledgments
-
-### Data Sources
-- **Zoning Data**: [DataMade's Second City Zoning](https://github.com/datamade/second-city-zoning)
-- **Parcel/Assessment**: Cook County Open Data Portal
-- **Geographic**: OpenStreetMap, Chicago Data Portal
-- **Transit**: CTA GTFS feeds
-
-### Inspiration
-- SimCity 2000 visual design
-- Burnham Plan of Chicago (1909)
-- Modern transit-oriented development case studies
-
-## 📄 License
-
-This project builds on open data and open source tools. See individual data sources for their specific licenses.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, style guide, and PR workflow.
 
 ---
 
-**Status**: Active Development  
-**Last Updated**: January 2025  
-**Contact**: See Plan_outline.md for project goals and vision
+**Status**: Active Development
+**Last Updated**: February 2025

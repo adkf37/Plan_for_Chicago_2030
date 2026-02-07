@@ -1,0 +1,23 @@
+# Plan for Chicago 2030 — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# Core data processing
+pandas>=2.0
+numpy>=1.24
+geopandas>=0.14
+shapely>=2.0
+requests>=2.31
+
+# Visualization & mapping
+folium>=0.15
+matplotlib>=3.8
+seaborn>=0.13
+
+# Street network analysis
+osmnx>=1.7
+
+# Environment variable management
+python-dotenv>=1.0
+
+# --- Dev / Test dependencies ---
+# pip install -r requirements.txt && pip install pytest flake8 black

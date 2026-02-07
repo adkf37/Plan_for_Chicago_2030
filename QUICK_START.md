@@ -1,7 +1,18 @@
-# Quick Start Guide - Uplift Analysis
+# Quick Start Guide — Uplift Analysis
 
 ## What This Does
-Analyzes **27 years of historical property data** (1999-2025) to understand how different zoning types appreciate over time, then uses those empirical rates to model property value uplift from rezoning scenarios.
+Analyzes **27 years of historical property data** (1999–2025) to understand how
+different zoning types appreciate over time, then uses those empirical rates to
+model property value uplift from rezoning scenarios.
+
+---
+
+## Prerequisites
+
+```bash
+cp .env.example .env        # add your Socrata app token
+pip install -r requirements.txt
+```
 
 ---
 
@@ -9,28 +20,28 @@ Analyzes **27 years of historical property data** (1999-2025) to understand how 
 
 ### Step 1: Download Historical Data & Calculate Appreciation Rates
 ```powershell
-python download_historical_assessments.py
+python -m src.download_historical
 ```
 
 **What it does:**
 - Downloads historical assessment data for your parcels
 - Calculates average annual appreciation by zoning type
-- Creates: `historical_data/appreciation_by_zoning.csv`
+- Writes to: `data/processed/appreciation_by_zoning.csv`
 
-**Time:** 5-15 minutes (depending on number of parcels)
+**Time:** 5–15 minutes (depending on number of parcels)
 
 ---
 
 ### Step 2: Run Uplift Scenarios
 ```powershell
-python improved_uplift_model.py
+python -m src.improved_uplift_model
 ```
 
 **What it does:**
-- Applies rezoning scenarios (e.g., upzone residential)
+- Applies rezoning scenarios (e.g., upzone residential corridors)
 - Calculates property value uplift using empirical appreciation rates
 - Estimates property tax revenue impacts
-- Creates: `uplift_scenarios/rezoning_scenario_results.csv`
+- Writes to: `data/processed/uplift_scenarios/`
 
 **Time:** < 1 minute
 
@@ -40,15 +51,19 @@ python improved_uplift_model.py
 
 ### Appreciation Rates by Zoning Type
 ```powershell
-cat historical_data/appreciation_summary.txt
+Get-Content data\processed\appreciation_analysis_summary.txt
 ```
-Shows which zoning types appreciate fastest over time.
 
 ### Scenario Impact Summary
 ```powershell
-cat uplift_scenarios/rezoning_impact_summary.txt
+Get-Content data\processed\uplift_scenarios\rezoning_impact_summary.txt
 ```
-Shows total value uplift and tax revenue from each rezoning scenario.
+
+### Generate Charts
+```powershell
+python -m viz.visualize_appreciation
+# → PNGs saved to reports/visualizations/
+```
 
 ---
 
@@ -56,15 +71,16 @@ Shows total value uplift and tax revenue from each rezoning scenario.
 
 | File | Purpose |
 |------|---------|
-| `historical_data/appreciation_by_zoning.csv` | ⭐ Appreciation rates by zone type |
-| `uplift_scenarios/rezoning_scenario_results.csv` | ⭐ Summary of uplift scenarios |
-| `README_UPLIFT_ANALYSIS.md` | Full documentation |
+| `data/processed/appreciation_by_zone_year.csv` | Appreciation rates by zone type & year |
+| `data/processed/uplift_scenarios/` | Uplift scenario results |
+| `data/reference/zoning_codes.csv` | Zone code definitions (FAR, height, use) |
+| `README_UPLIFT_ANALYSIS.md` | Full methodology documentation |
 
 ---
 
-## Customize Scenarios
+## Customise Scenarios
 
-Edit `improved_uplift_model.py`, find `define_rezoning_scenarios()`:
+Edit `src/improved_uplift_model.py`, find `define_rezoning_scenarios()`:
 
 ```python
 scenarios = {
@@ -73,7 +89,6 @@ scenarios = {
         'description': 'What this does',
         'rules': [
             {'from_zoning': '202', 'to_zoning': '211', 'filter': None},
-            # Add more rules
         ]
     }
 }
@@ -81,11 +96,11 @@ scenarios = {
 
 **Common Cook County Classes:**
 - `202`, `203`, `204` = Single-family (low density)
-- `211`, `212` = Multi-family (medium density)  
+- `211`, `212` = Multi-family (medium density)
 - `295`, `297`, `299` = Commercial
 - `597`, `592` = Mixed-use (high density)
 
-Then re-run: `python improved_uplift_model.py`
+Then re-run: `python -m src.improved_uplift_model`
 
 ---
 
@@ -94,10 +109,10 @@ Then re-run: `python improved_uplift_model.py`
 **Appreciation Rates:**
 ```
 Zoning Type    Annual Appreciation
-299            4.8% per year
-295            4.2% per year
-211            3.9% per year
-202            3.1% per year
+299            4.8 % per year
+295            4.2 % per year
+211            3.9 % per year
+202            3.1 % per year
 ```
 
 **Scenario Results:**
@@ -113,12 +128,13 @@ Scenario: Upzone Residential Low to Medium
 
 ## Need Help?
 
-- Full docs: `README_UPLIFT_ANALYSIS.md`
-- Inline comments in both Python scripts explain each function
+- Full docs: [README_UPLIFT_ANALYSIS.md](README_UPLIFT_ANALYSIS.md)
+- Project overview: [README.md](README.md)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
-**Ready to run? Start with:**
+**Ready to run?**
 ```powershell
-python download_historical_assessments.py
+python -m src.download_historical
 ```
