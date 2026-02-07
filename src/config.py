@@ -29,6 +29,12 @@ ZONING_DATA_URL = "https://data.cityofchicago.org/resource/dj47-wfun.geojson"
 # CTA L Station locations from Chicago Data Portal
 CTA_STATIONS_URL = "https://data.cityofchicago.org/resource/8pix-ypme.geojson"
 
+# CTA Bus Routes from Chicago Data Portal (polylines)
+CTA_BUS_ROUTES_URL = "https://data.cityofchicago.org/resource/rytz-fq6y.geojson"
+
+# Metra commuter rail stations from Chicago Data Portal
+METRA_STATIONS_URL = "https://data.cityofchicago.org/resource/jc4q-wg5p.geojson"
+
 # Census tract boundaries for Cook County (TIGER/Line shapefiles via Census Bureau)
 # Using 2023 TIGER/Line Census Tracts for Illinois (FIPS 17), filtered to Cook County (FIPS 031)
 CENSUS_TRACTS_URL = "https://www2.census.gov/geo/tiger/TIGER2023/TRACT/tl_2023_17_tract.zip"
@@ -50,6 +56,8 @@ ZONING_GEOJSON = GEOJSON_DIR / "zoning_data.geojson"
 CHICAGO_ZONING_GEOJSON = GEOJSON_DIR / "chicago_zoning_2025.geojson"
 CENSUS_TRACTS_GEOJSON = GEOJSON_DIR / "census_tracts.geojson"
 CTA_STATIONS_GEOJSON = GEOJSON_DIR / "cta_stations.geojson"
+CTA_BUS_ROUTES_GEOJSON = GEOJSON_DIR / "cta_bus_routes.geojson"
+METRA_STATIONS_GEOJSON = GEOJSON_DIR / "metra_stations.geojson"
 
 # Reference data (small, tracked in git)
 REFERENCE_DIR = PROJECT_ROOT / "data" / "reference"
@@ -65,6 +73,7 @@ UPLIFT_SCENARIOS_DIR = PROCESSED_DIR / "uplift_scenarios"
 PARCELS_ENRICHED_GEOJSON = PROCESSED_DIR / "parcels_enriched.geojson"
 VALUE_PROJECTIONS_CSV = PROCESSED_DIR / "value_projections.csv"
 VALUE_MODEL_VALIDATION_CSV = PROCESSED_DIR / "value_model_validation.csv"
+TRANSIT_SCORES_CSV = PROCESSED_DIR / "transit_scores.csv"
 ZONING_SUMMARY_CSV = PROCESSED_DIR / "zoning_summary.csv"
 
 # --- Output Paths ---
@@ -76,6 +85,7 @@ INTERACTIVE_MAP = MAPS_DIR / "chicago_interactive_map.html"
 ZONING_MAP = MAPS_DIR / "chicago_zoning_map.html"
 COMPARISON_MAP = MAPS_DIR / "zoning_comparison_map.html"
 VALUE_IMPACT_MAP = MAPS_DIR / "zoning_value_impact_map.html"
+TRANSIT_SHED_MAP = MAPS_DIR / "transit_shed_map.html"
 
 # Analysis results
 ANALYSIS_RESULTS_DIR = PROJECT_ROOT / "analysis_results"
@@ -121,6 +131,33 @@ HOUSING_DENSITY_CATEGORIES = {
 }
 
 # --- Value Uplift Model Parameters ---
+
+# Transit proximity tier thresholds (meters)
+TRANSIT_TIERS = [
+    (0, 400, "Tier 1 (<400m)"),
+    (400, 800, "Tier 2 (400-800m)"),
+    (800, 1600, "Tier 3 (800m-1.6km)"),
+    (1600, float("inf"), "Tier 4 (>1.6km)"),
+]
+
+# Proposed transit extensions — hypothetical station points from Plan_outline
+# (subway expansion, BRT corridors).  Each entry is (name, lat, lon).
+PROPOSED_TRANSIT_EXTENSIONS = [
+    # West Loop – Ashland BRT corridor stations (north-south)
+    ("Ashland/Lake", 41.8855, -87.6668),
+    ("Ashland/Madison", 41.8816, -87.6668),
+    ("Ashland/Roosevelt", 41.8673, -87.6668),
+    ("Ashland/Cermak", 41.8524, -87.6668),
+    ("Ashland/Pershing", 41.8235, -87.6668),
+    # Circle Line infill stations (long-discussed CTA proposal)
+    ("Circle Line / Goose Island", 41.9065, -87.6580),
+    ("Circle Line / Fulton Market", 41.8868, -87.6530),
+    ("Circle Line / Pilsen", 41.8565, -87.6560),
+    ("Circle Line / Bronzeville", 41.8310, -87.6195),
+    # Red Line Extension (south — under construction/planned)
+    ("130th St", 41.6340, -87.6250),
+    ("Michigan Ave / 111th St", 41.6923, -87.6235),
+]
 
 # FAR-based appreciation rate (per FAR point increase)
 FAR_APPRECIATION_RATE = 0.15

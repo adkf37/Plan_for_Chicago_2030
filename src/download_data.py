@@ -20,6 +20,8 @@ from src.config import (
     PARCEL_GEOMETRY_URL, ASSESSMENT_DATA_URL, ZONING_DATA_URL,
     PARCEL_GEOJSON, ASSESSMENT_GEOJSON, ZONING_GEOJSON,
     CTA_STATIONS_URL, CTA_STATIONS_GEOJSON,
+    CTA_BUS_ROUTES_URL, CTA_BUS_ROUTES_GEOJSON,
+    METRA_STATIONS_URL, METRA_STATIONS_GEOJSON,
     CENSUS_TRACTS_URL, CENSUS_TRACTS_GEOJSON,
     ensure_dirs,
 )
@@ -108,6 +110,60 @@ def download_cta_stations() -> gpd.GeoDataFrame | None:
     return stations_gdf
 
 
+def download_metra_stations() -> gpd.GeoDataFrame | None:
+    """
+    Download Metra commuter rail station locations from Chicago Data Portal.
+
+    Returns:
+        GeoDataFrame of Metra stations, or None on failure.
+    """
+    print(f"\n--- Downloading Metra Stations ---")
+    stations_gdf = fetch_all_socrata_data(METRA_STATIONS_URL)
+
+    if stations_gdf is not None:
+        errors = validate_dataframe(
+            stations_gdf,
+            "Metra Stations",
+            required_columns=["geometry"],
+            min_rows=10,  # Metra has ~240 stations but some may be outside Chicago
+            expected_crs="EPSG:4326",
+        )
+        if errors:
+            for err in errors:
+                print(f"  WARNING: {err}")
+
+        print(f"Downloaded {len(stations_gdf)} Metra stations")
+
+    return stations_gdf
+
+
+def download_cta_bus_routes() -> gpd.GeoDataFrame | None:
+    """
+    Download CTA bus route polylines from Chicago Data Portal.
+
+    Returns:
+        GeoDataFrame of CTA bus routes, or None on failure.
+    """
+    print(f"\n--- Downloading CTA Bus Routes ---")
+    routes_gdf = fetch_all_socrata_data(CTA_BUS_ROUTES_URL)
+
+    if routes_gdf is not None:
+        errors = validate_dataframe(
+            routes_gdf,
+            "CTA Bus Routes",
+            required_columns=["geometry"],
+            min_rows=50,
+            expected_crs="EPSG:4326",
+        )
+        if errors:
+            for err in errors:
+                print(f"  WARNING: {err}")
+
+        print(f"Downloaded {len(routes_gdf)} CTA bus routes")
+
+    return routes_gdf
+
+
 def download_all_datasets():
     """Download all datasets and save to data/geojson/."""
     ensure_dirs()
@@ -159,6 +215,18 @@ def download_all_datasets():
     if stations_gdf is not None:
         stations_gdf.to_file(str(CTA_STATIONS_GEOJSON), driver="GeoJSON")
         print(f"Saved {len(stations_gdf)} CTA stations to {CTA_STATIONS_GEOJSON}")
+
+    # Download Metra Stations
+    metra_gdf = download_metra_stations()
+    if metra_gdf is not None:
+        metra_gdf.to_file(str(METRA_STATIONS_GEOJSON), driver="GeoJSON")
+        print(f"Saved {len(metra_gdf)} Metra stations to {METRA_STATIONS_GEOJSON}")
+
+    # Download CTA Bus Routes
+    bus_gdf = download_cta_bus_routes()
+    if bus_gdf is not None:
+        bus_gdf.to_file(str(CTA_BUS_ROUTES_GEOJSON), driver="GeoJSON")
+        print(f"Saved {len(bus_gdf)} CTA bus routes to {CTA_BUS_ROUTES_GEOJSON}")
 
     # Report validation errors
     if all_errors:
