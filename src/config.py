@@ -26,6 +26,13 @@ ASSESSMENT_DATA_URL = "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.g
 ASSESSMENT_JSON_URL = "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json"
 ZONING_DATA_URL = "https://data.cityofchicago.org/resource/dj47-wfun.geojson"
 
+# CTA L Station locations from Chicago Data Portal
+CTA_STATIONS_URL = "https://data.cityofchicago.org/resource/8pix-ypme.geojson"
+
+# Census tract boundaries for Cook County (TIGER/Line shapefiles via Census Bureau)
+# Using 2023 TIGER/Line Census Tracts for Illinois (FIPS 17), filtered to Cook County (FIPS 031)
+CENSUS_TRACTS_URL = "https://www2.census.gov/geo/tiger/TIGER2023/TRACT/tl_2023_17_tract.zip"
+
 # --- Data Paths ---
 
 # Raw data (immutable downloads — gitignored)
@@ -41,6 +48,8 @@ PARCEL_GEOJSON = GEOJSON_DIR / "parcel_data.geojson"
 ASSESSMENT_GEOJSON = GEOJSON_DIR / "assessment_data.geojson"
 ZONING_GEOJSON = GEOJSON_DIR / "zoning_data.geojson"
 CHICAGO_ZONING_GEOJSON = GEOJSON_DIR / "chicago_zoning_2025.geojson"
+CENSUS_TRACTS_GEOJSON = GEOJSON_DIR / "census_tracts.geojson"
+CTA_STATIONS_GEOJSON = GEOJSON_DIR / "cta_stations.geojson"
 
 # Reference data (small, tracked in git)
 REFERENCE_DIR = PROJECT_ROOT / "data" / "reference"
@@ -53,6 +62,8 @@ UPZONING_CHANGES_CSV = PROCESSED_DIR / "upzoning_scenario_changes.csv"
 VALUE_IMPACT_CSV = PROCESSED_DIR / "zoning_value_impact_analysis.csv"
 HISTORICAL_DATA_DIR = PROCESSED_DIR / "historical_data"
 UPLIFT_SCENARIOS_DIR = PROCESSED_DIR / "uplift_scenarios"
+PARCELS_ENRICHED_GEOJSON = PROCESSED_DIR / "parcels_enriched.geojson"
+ZONING_SUMMARY_CSV = PROCESSED_DIR / "zoning_summary.csv"
 
 # --- Output Paths ---
 

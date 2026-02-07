@@ -1,6 +1,6 @@
 # Epic 03 — Zoning Analysis Engine
 
-> **Status:** In Progress  
+> **Status:** Done  
 > **Priority:** P1  
 > **Owner:** —  
 
@@ -12,12 +12,12 @@ and produce city-wide zoning analytics ready for visualisation and modelling.
 
 - [x] Create `data/reference/zoning_codes.csv` with district codes, FAR, max height, zone type
 - [x] Build `src/zoning.py` — classify parcels by zoning district via spatial join
-- [ ] Implement actual spatial join logic (parcel centroids → zoning polygons)
-- [ ] Add computed columns: `zone_category` (Residential / Commercial / Mixed / Industrial / Parks / Transport)
-- [ ] Calculate per-zone summary statistics (parcel count, total area, avg assessed value)
-- [ ] Detect parcels currently zoned below transit-corridor potential (candidates for upzoning)
-- [ ] Export enriched parcel dataset to `data/processed/parcels_enriched.geojson`
-- [ ] Write unit tests for classification logic
+- [x] Implement actual spatial join logic (parcel centroids → zoning polygons)
+- [x] Add computed columns: `zone_category` (Residential / Commercial / Mixed / Industrial / Parks / Transport)
+- [x] Calculate per-zone summary statistics (parcel count, total area, avg assessed value)
+- [x] Detect parcels currently zoned below transit-corridor potential (candidates for upzoning)
+- [x] Export enriched parcel dataset to `data/processed/parcels_enriched.geojson`
+- [x] Write unit tests for classification logic
 
 ## Acceptance Criteria
 - Every parcel has a `zone_type`, `zone_category`, `far`, `max_height` attribute

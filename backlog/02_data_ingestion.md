@@ -1,6 +1,6 @@
 # Epic 02 — Data Ingestion Pipeline
 
-> **Status:** In Progress  
+> **Status:** Done  
 > **Priority:** P0 — Foundation  
 > **Owner:** —  
 
@@ -24,12 +24,12 @@ all upstream datasets so analysis modules can work from local files.
 - [x] Consolidate Socrata fetch logic into `src/data_utils.py` (JSON + GeoJSON)
 - [x] Implement `src/download_data.py` — parcels, assessments, zoning
 - [x] Implement `src/download_historical.py` — full historical assessments
-- [ ] Add cache layer (ETag / Last-Modified headers) to avoid redundant downloads
-- [ ] Add data validation: row counts, required columns, CRS checks
-- [ ] Download census tract boundaries (`data/geojson/census_tracts.geojson`)
-- [ ] Download CTA rail station locations (point layer)
-- [ ] Add scheduled ETL via GitHub Actions cron job (weekly refresh)
-- [ ] Write integration test that mocks Socrata and verifies output files exist
+- [x] Add cache layer (ETag / Last-Modified headers) to avoid redundant downloads
+- [x] Add data validation: row counts, required columns, CRS checks
+- [x] Download census tract boundaries (`data/geojson/census_tracts.geojson`)
+- [x] Download CTA rail station locations (point layer)
+- [x] Add scheduled ETL via GitHub Actions cron job (weekly refresh)
+- [x] Write integration test that mocks Socrata and verifies output files exist
 
 ## Acceptance Criteria
 - Running `python -m src.download_data` populates `data/geojson/` with ≥ 3 files
