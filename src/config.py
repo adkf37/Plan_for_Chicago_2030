@@ -63,6 +63,8 @@ VALUE_IMPACT_CSV = PROCESSED_DIR / "zoning_value_impact_analysis.csv"
 HISTORICAL_DATA_DIR = PROCESSED_DIR / "historical_data"
 UPLIFT_SCENARIOS_DIR = PROCESSED_DIR / "uplift_scenarios"
 PARCELS_ENRICHED_GEOJSON = PROCESSED_DIR / "parcels_enriched.geojson"
+VALUE_PROJECTIONS_CSV = PROCESSED_DIR / "value_projections.csv"
+VALUE_MODEL_VALIDATION_CSV = PROCESSED_DIR / "value_model_validation.csv"
 ZONING_SUMMARY_CSV = PROCESSED_DIR / "zoning_summary.csv"
 
 # --- Output Paths ---
