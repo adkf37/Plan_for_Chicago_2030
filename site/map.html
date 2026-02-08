@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Map — Plan for Chicago 2030</title>
+
+  <!-- MapLibre GL JS -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Accessibility: skip-to-content link -->
+<a href="#map" class="skip-link">Skip to map</a>
+
+<!-- Mobile sidebar toggle -->
+<button id="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+
+<div id="app">
+
+  <!-- ============= SIDEBAR ============= -->
+  <aside id="sidebar" role="navigation" aria-label="Map controls">
+
+    <div class="sidebar-header">
+      <h1>Plan for Chicago&nbsp;2030</h1>
+      <p>Interactive Zoning &amp; Transit Map</p>
+    </div>
+
+    <div class="sidebar-body">
+
+      <!-- Address search -->
+      <div class="section-title">Search</div>
+      <div id="geocoder-box">
+        <input id="geocoder-input" type="text" placeholder="Address or place …"
+               aria-label="Search address" />
+        <button id="geocoder-btn" aria-label="Search">Go</button>
+      </div>
+
+      <!-- Layer toggles -->
+      <div class="section-title">Layers</div>
+
+      <div class="layer-toggle">
+        <input type="checkbox" id="lyr-zoning" data-layer="zoning" checked />
+        <span class="layer-swatch" style="background:#00ff00"></span>
+        <label for="lyr-zoning">Current Zoning</label>
+      </div>
+      <div class="layer-toggle">
+        <input type="checkbox" id="lyr-proposed" data-layer="proposed_zoning" />
+        <span class="layer-swatch" style="background:#ff6600"></span>
+        <label for="lyr-proposed">Proposed Zoning</label>
+      </div>
+      <div class="layer-toggle">
+        <input type="checkbox" id="lyr-transit" data-layer="transit" checked />
+        <span class="layer-swatch" style="background:#1f78b4"></span>
+        <label for="lyr-transit">Transit Stations</label>
+      </div>
+      <div class="layer-toggle">
+        <input type="checkbox" id="lyr-parcels" data-layer="parcels" />
+        <span class="layer-swatch" style="background:#41b6c4"></span>
+        <label for="lyr-parcels">Parcel Values / TOD</label>
+      </div>
+
+      <!-- Comparison mode -->
+      <div class="section-title">Compare</div>
+      <div class="layer-toggle">
+        <input type="checkbox" id="compare-mode" />
+        <label for="compare-mode">Before / After overlay</label>
+      </div>
+
+      <!-- Legend -->
+      <div class="section-title">Legend</div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-color" style="background:#00ff00"></span> Residential</div>
+        <div class="legend-item"><span class="legend-color" style="background:#0000ff"></span> Business</div>
+        <div class="legend-item"><span class="legend-color" style="background:#ffff00"></span> Manufacturing</div>
+        <div class="legend-item"><span class="legend-color" style="background:#ff0000"></span> Planned Dev</div>
+        <div class="legend-item"><span class="legend-color" style="background:#38761d"></span> Parks</div>
+        <div class="legend-item"><span class="legend-color" style="background:#666666"></span> Transport</div>
+      </div>
+      <div class="legend" style="margin-top:.4rem">
+        <div class="legend-item"><span class="legend-color" style="background:#1f78b4"></span> CTA L</div>
+        <div class="legend-item"><span class="legend-color" style="background:#33a02c"></span> Metra</div>
+        <div class="legend-item"><span class="legend-color" style="background:#e31a1c"></span> Proposed</div>
+      </div>
+
+      <!-- TOD score gradient -->
+      <div style="margin-top:.5rem; font-size:.75rem; color:#666;">TOD Score</div>
+      <div style="display:flex; height:12px; border-radius:3px; overflow:hidden; margin-top:2px;">
+        <div style="flex:1; background:#ffffcc" title="0"></div>
+        <div style="flex:1; background:#a1dab4" title="25"></div>
+        <div style="flex:1; background:#41b6c4" title="50"></div>
+        <div style="flex:1; background:#2c7fb8" title="75"></div>
+        <div style="flex:1; background:#253494" title="100"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:.68rem; color:#999;">
+        <span>0</span><span>50</span><span>100</span>
+      </div>
+
+      <!-- Story-map tours -->
+      <div class="section-title">Guided Tours</div>
+      <button class="tour-btn" data-lng="-87.6298" data-lat="41.8819" data-zoom="14">
+        &#9654; The Loop
+      </button>
+      <button class="tour-btn" data-lng="-87.6668" data-lat="41.8673" data-zoom="13.5">
+        &#9654; Ashland BRT Corridor
+      </button>
+      <button class="tour-btn" data-lng="-87.6250" data-lat="41.6923" data-zoom="12.5">
+        &#9654; Red Line Extension
+      </button>
+      <button class="tour-btn" data-lng="-87.6560" data-lat="41.8565" data-zoom="14">
+        &#9654; Pilsen / Circle Line
+      </button>
+      <button class="tour-btn" data-lng="-87.623" data-lat="41.859" data-zoom="15">
+        &#9654; Near South Side Study Area
+      </button>
+
+      <!-- Accessibility -->
+      <div class="section-title">Accessibility</div>
+      <button id="hc-toggle" class="tour-btn" style="background:#555;">
+        &#9788; Toggle High Contrast
+      </button>
+
+    </div><!-- /sidebar-body -->
+
+    <div class="sidebar-footer">
+      <a href="index.html">&larr; Back to project home</a><br />
+      &copy; 2025-2026 Plan for Chicago 2030
+    </div>
+  </aside>
+
+  <!-- ============= MAP ============= -->
+  <div id="map" tabindex="0" role="application" aria-label="Interactive Chicago zoning and transit map">
+    <div id="compare-container">
+      <label>Before/After overlay active — toggle layers to compare.</label>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- App script -->
+<script src="js/map.js"></script>
+</body>
+</html>

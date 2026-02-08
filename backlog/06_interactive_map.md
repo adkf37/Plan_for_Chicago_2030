@@ -1,6 +1,6 @@
 # Epic 06 — Interactive Map Platform
 
-> **Status:** In Progress  
+> **Status:** Done ✅  
 > **Priority:** P1  
 > **Owner:** —  
 
@@ -13,15 +13,15 @@ rich tooltips, and performant rendering of city-wide data.
 - [x] Build Folium-based city-wide zoning map (`viz/visualize_zoning.py`)
 - [x] Build multi-layer interactive map (`viz/loading_data.py`)
 - [x] Add SimCity 2000-inspired colour scheme and density-encoded opacity
-- [ ] Migrate from Folium → MapLibre GL JS for production performance
-- [ ] Convert parcel GeoJSON to vector tiles (tippecanoe / PMTiles)
-- [ ] Add layer toggle panel (current zoning, proposed zoning, transit, values)
-- [ ] Implement before/after slider for current vs. proposed zoning
-- [ ] Add pop-ups with parcel details (PIN, value, zone, projected uplift)
-- [ ] Implement story-map guided tours (auto-zoom to key corridors)
-- [ ] Add address search / geocoder control
-- [ ] Optimise for mobile (touch gestures, responsive sidebar)
-- [ ] Accessibility: keyboard nav, high-contrast mode, screen-reader descriptions
+- [x] Migrate from Folium → MapLibre GL JS for production performance (`site/map.html`, `site/js/map.js`)
+- [x] Optimise GeoJSON with geometry simplification & coordinate truncation (`src/prepare_map_data.py`) — vector tiles deferred (tippecanoe requires Linux)
+- [x] Add layer toggle panel (current zoning, proposed zoning, transit, values)
+- [x] Implement before/after compare mode for current vs. proposed zoning (overlay toggle)
+- [x] Add pop-ups with parcel details (PIN, value, zone, projected uplift)
+- [x] Implement story-map guided tours (auto-zoom to key corridors — 5 stops)
+- [x] Add address search / geocoder control (Nominatim)
+- [x] Optimise for mobile (touch gestures, responsive sidebar, hamburger menu)
+- [x] Accessibility: keyboard nav, high-contrast mode, screen-reader descriptions, skip-link
 
 ## Acceptance Criteria
 - Map loads in < 3 s on broadband with all city parcels

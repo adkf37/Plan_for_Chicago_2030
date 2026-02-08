@@ -87,6 +87,10 @@ COMPARISON_MAP = MAPS_DIR / "zoning_comparison_map.html"
 VALUE_IMPACT_MAP = MAPS_DIR / "zoning_value_impact_map.html"
 TRANSIT_SHED_MAP = MAPS_DIR / "transit_shed_map.html"
 
+# Site / web-map data (optimised GeoJSON for MapLibre)
+SITE_DIR = PROJECT_ROOT / "site"
+SITE_DATA_DIR = SITE_DIR / "data"
+
 # Analysis results
 ANALYSIS_RESULTS_DIR = PROJECT_ROOT / "analysis_results"
 
@@ -229,7 +233,7 @@ def ensure_dirs():
         RAW_DIR, RAW_HISTORICAL_DIR, GEOJSON_DIR, REFERENCE_DIR,
         PROCESSED_DIR, HISTORICAL_DATA_DIR, UPLIFT_SCENARIOS_DIR,
         MAPS_DIR, ANALYSIS_RESULTS_DIR, REPORTS_DIR, VISUALIZATIONS_DIR,
-        CACHE_DIR,
+        CACHE_DIR, SITE_DATA_DIR,
     ]:
         d.mkdir(parents=True, exist_ok=True)
 

@@ -1,0 +1,98 @@
+/*  Plan for Chicago 2030 — Interactive Map Styles
+    ============================================== */
+
+:root {
+  --brand:    #003366;
+  --accent:   #cf2920;
+  --sidebar:  280px;
+  --bg:       #f4f4f4;
+  --text:     #222;
+  --muted:    #666;
+  --radius:   6px;
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; color: var(--text); }
+
+/* ---- Layout ---- */
+#app          { display: flex; height: 100vh; overflow: hidden; }
+#sidebar      { width: var(--sidebar); background: #fff; border-right: 1px solid #ddd;
+                display: flex; flex-direction: column; z-index: 10; transition: transform .3s; }
+#map          { flex: 1; position: relative; }
+
+/* ---- Sidebar ---- */
+.sidebar-header { background: var(--brand); color: #fff; padding: 1rem; text-align: center; }
+.sidebar-header h1 { font-size: 1.15rem; line-height: 1.3; }
+.sidebar-header p  { font-size: .78rem; opacity: .8; margin-top: .25rem; }
+
+.sidebar-body  { flex: 1; overflow-y: auto; padding: .75rem; }
+.sidebar-footer { padding: .5rem .75rem; font-size: .72rem; color: var(--muted);
+                  border-top: 1px solid #eee; text-align: center; }
+
+/* ---- Section / toggles ---- */
+.section-title { font-size: .82rem; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .04em; color: var(--brand); margin: .8rem 0 .4rem; }
+
+.layer-toggle  { display: flex; align-items: center; gap: .5rem; padding: .35rem 0; cursor: pointer; }
+.layer-toggle input[type="checkbox"] { accent-color: var(--brand); width: 16px; height: 16px; }
+.layer-toggle label { font-size: .85rem; cursor: pointer; user-select: none; }
+.layer-swatch  { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #ccc; flex-shrink: 0; }
+
+/* ---- Legend ---- */
+.legend        { display: flex; flex-wrap: wrap; gap: .3rem .6rem; margin-top: .3rem; }
+.legend-item   { display: flex; align-items: center; gap: .3rem; font-size: .75rem; }
+.legend-color  { width: 12px; height: 12px; border-radius: 2px; border: 1px solid #999; }
+
+/* ---- Story tour ---- */
+.tour-btn { display: block; width: 100%; padding: .5rem; margin: .25rem 0;
+            font-size: .82rem; background: var(--brand); color: #fff; border: none;
+            border-radius: var(--radius); cursor: pointer; text-align: left; }
+.tour-btn:hover { background: #004488; }
+.tour-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---- Geocoder ---- */
+#geocoder-box { display: flex; gap: .3rem; margin-bottom: .5rem; }
+#geocoder-input { flex: 1; padding: .4rem .5rem; border: 1px solid #ccc; border-radius: var(--radius);
+                  font-size: .85rem; }
+#geocoder-btn   { padding: .4rem .6rem; background: var(--brand); color: #fff; border: none;
+                  border-radius: var(--radius); cursor: pointer; font-size: .85rem; }
+
+/* ---- Popup ---- */
+.maplibregl-popup-content { border-radius: var(--radius); padding: .8rem 1rem; max-width: 300px;
+                            font-size: .82rem; line-height: 1.5; }
+.popup-title { font-weight: 700; margin-bottom: .3rem; color: var(--brand); }
+.popup-row   { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: .2rem 0; }
+.popup-label { color: var(--muted); }
+
+/* ---- Comparison slider ---- */
+#compare-container { position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+                     z-index: 5; background: #fff; padding: .4rem .8rem; border-radius: var(--radius);
+                     box-shadow: 0 2px 8px rgba(0,0,0,.15); font-size: .82rem; display:none; }
+#compare-container label { margin-right: .4rem; }
+
+/* ---- High-contrast mode ---- */
+.high-contrast { --bg: #000; --text: #fff; --muted: #ccc; }
+.high-contrast #sidebar { background: #111; border-right-color: #444; }
+.high-contrast .sidebar-body { color: #eee; }
+.high-contrast .section-title { color: #8cf; }
+
+/* ---- Toggle button (mobile) ---- */
+#sidebar-toggle { display: none; position: absolute; top: 10px; left: 10px; z-index: 20;
+                  background: #fff; border: none; border-radius: var(--radius);
+                  box-shadow: 0 2px 6px rgba(0,0,0,.2); width: 36px; height: 36px;
+                  font-size: 1.3rem; cursor: pointer; line-height: 36px; text-align: center; }
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+  :root { --sidebar: 260px; }
+  #sidebar { position: absolute; top: 0; left: 0; height: 100%;
+             transform: translateX(-100%); box-shadow: 2px 0 12px rgba(0,0,0,.25); }
+  #sidebar.open { transform: translateX(0); }
+  #sidebar-toggle { display: block; }
+}
+
+/* ---- Skip-to-content (accessibility) ---- */
+.skip-link { position: absolute; top: -100px; left: 0; background: var(--brand); color: #fff;
+             padding: .5rem 1rem; z-index: 100; font-size: .9rem; }
+.skip-link:focus { top: 0; }
