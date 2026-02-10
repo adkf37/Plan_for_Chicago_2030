@@ -23,10 +23,16 @@ cp .env.example .env            # add your Socrata token
 python -m venv .venv && .venv\Scripts\activate
 pip install -r requirements.txt
 
-# 2. Download data
-python -m src.download_data     # parcels, assessments, zoning → data/geojson/
+# 2. Run the complete pipeline (recommended)
+python -m src.pipeline          # downloads data → zoning → transit → web map
 
-# 3. Generate maps
+# OR run individual modules:
+python -m src.download_data     # → data/geojson/ (parcels, zoning, transit)
+python -m src.zoning            # → data/processed/parcels_enriched.geojson
+python -m src.transportation    # → data/processed/transit_scores.csv
+python -m src.prepare_map_data  # → site/data/*.geojson (web map layers)
+
+# 3. Generate analysis maps
 python -m viz.visualize_zoning           # → maps/chicago_zoning_map.html
 python -m src.compare_zoning_scenarios   # → maps/zoning_comparison_map.html
 python -m src.analyze_area               # → maps/area_value_map.html
@@ -42,18 +48,20 @@ See [QUICK_START.md](QUICK_START.md) for the full uplift-analysis walkthrough.
 ```
 Plan_for_Chicago_2030/
 ├── src/                    # Core data & analysis modules
+│   ├── pipeline.py         # 🚀 Master orchestrator — runs full pipeline
 │   ├── config.py           # All paths, constants, API settings
 │   ├── data_utils.py       # Socrata API helpers
 │   ├── download_data.py    # Dataset downloader
+│   ├── zoning.py           # Zoning analysis & parcel enrichment
+│   ├── transportation.py   # Transit accessibility scoring
+│   ├── prepare_map_data.py # Web map layer generator
 │   ├── analyze_area.py     # Area-level value analysis
-│   ├── download_historical.py
-│   ├── process_historical.py
-│   ├── improved_uplift_model.py
 │   ├── compare_zoning_scenarios.py
 │   ├── zoning_value_impact.py
-│   ├── zoning.py
 │   ├── property_value.py
-│   └── transportation.py
+│   ├── download_historical.py
+│   ├── process_historical.py
+│   └── improved_uplift_model.py
 ├── viz/                    # Visualisation scripts
 │   ├── visualize_zoning.py
 │   ├── visualize_appreciation.py
@@ -141,4 +149,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, style guide, and 
 ---
 
 **Status**: Active Development
-**Last Updated**: February 2025
+**Last Updated**: February 2026

@@ -182,19 +182,25 @@ def export_transit_layer(output_dir: Path | None = None) -> Path | None:
             if "station_name" not in g.columns:
                 g["station_name"] = [f"{stype}_{i}" for i in range(len(g))]
             g["station_type"] = stype
-            parts.append(g[["geometry", "station_name", "station_type"]])
+            # Create clean copy with only needed columns and reset index
+            subset = g[["geometry", "station_name", "station_type"]].copy()
+            subset.reset_index(drop=True, inplace=True)
+            parts.append(subset)
 
     # Add proposed stations from config
     from src.config import PROPOSED_TRANSIT_EXTENSIONS
     from shapely.geometry import Point
     rows = [{"station_name": n, "station_type": "Proposed",
              "geometry": Point(lon, lat)} for n, lat, lon in PROPOSED_TRANSIT_EXTENSIONS]
-    parts.append(gpd.GeoDataFrame(rows, crs="EPSG:4326"))
+    proposed = gpd.GeoDataFrame(rows, crs="EPSG:4326")
+    proposed.reset_index(drop=True, inplace=True)
+    parts.append(proposed)
 
     if not parts:
         print("  SKIP transit — no station files found")
         return None
 
+    # Concatenate all parts and ensure it's a proper GeoDataFrame
     combined = pd.concat(parts, ignore_index=True)
     combined = gpd.GeoDataFrame(combined, geometry="geometry", crs="EPSG:4326")
     return _save_geojson(combined, output_dir / "transit_stations.geojson")

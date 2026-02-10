@@ -110,15 +110,15 @@ def combine_stations(
 
     cta = load_cta_stations()
     if cta is not None:
-        parts.append(cta[["station_name", "station_type", "geometry"]])
+        parts.append(cta[["station_name", "station_type", "geometry"]].reset_index(drop=True))
 
     if include_metra:
         metra = load_metra_stations()
         if metra is not None:
-            parts.append(metra[["station_name", "station_type", "geometry"]])
+            parts.append(metra[["station_name", "station_type", "geometry"]].reset_index(drop=True))
 
     if include_proposed:
-        parts.append(build_proposed_stations())
+        parts.append(build_proposed_stations().reset_index(drop=True))
 
     if not parts:
         print("ERROR: No station data available.")

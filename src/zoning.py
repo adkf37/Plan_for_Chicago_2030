@@ -113,10 +113,16 @@ def spatial_join_parcels_to_zoning(
     parcels = parcels_gdf.copy()
     
     if use_centroid:
-        # Store original geometry
+        # Store original geometry and CRS
         parcels["_original_geometry"] = parcels.geometry
-        # Replace with centroid for spatial join
-        parcels["geometry"] = parcels.geometry.centroid
+        original_crs = parcels.crs
+        
+        # Project to Illinois State Plane for accurate centroid calculation
+        parcels_proj = parcels.to_crs("EPSG:3435")
+        centroids = parcels_proj.geometry.centroid
+        
+        # Project centroids back to original CRS
+        parcels["geometry"] = centroids.to_crs(original_crs)
     
     # Perform spatial join
     joined = gpd.sjoin(

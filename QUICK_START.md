@@ -1,5 +1,11 @@
 # Quick Start Guide — Uplift Analysis
 
+> **Note:** For the **main data pipeline** (download → zoning → transit → web map), use:
+> ```bash
+> python -m src.pipeline
+> ```
+> This guide covers the **historical property value uplift analysis** workflow.
+
 ## What This Does
 Analyzes **27 years of historical property data** (1999–2025) to understand how
 different zoning types appreciate over time, then uses those empirical rates to
