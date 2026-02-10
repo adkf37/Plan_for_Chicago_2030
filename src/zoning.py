@@ -109,8 +109,20 @@ def spatial_join_parcels_to_zoning(
         print(f"  Reprojecting zoning from {zoning_gdf.crs} to {parcels_gdf.crs}")
         zoning_gdf = zoning_gdf.to_crs(parcels_gdf.crs)
     
-    # Create a working copy
+    # Create working copies
     parcels = parcels_gdf.copy()
+    zoning = zoning_gdf.copy()
+
+    # Repair invalid geometries that can cause spatial join failures
+    if not parcels.geometry.is_valid.all():
+        invalid_count = (~parcels.geometry.is_valid).sum()
+        print(f"  Repairing {invalid_count:,} invalid parcel geometries")
+        parcels["geometry"] = parcels.geometry.buffer(0)
+
+    if not zoning.geometry.is_valid.all():
+        invalid_count = (~zoning.geometry.is_valid).sum()
+        print(f"  Repairing {invalid_count:,} invalid zoning geometries")
+        zoning["geometry"] = zoning.geometry.buffer(0)
     
     if use_centroid:
         # Store original geometry and CRS
@@ -127,10 +139,25 @@ def spatial_join_parcels_to_zoning(
     # Perform spatial join
     joined = gpd.sjoin(
         parcels,
-        zoning_gdf,
+        zoning,
         how="left",
-        predicate="within" if use_centroid else "intersects"
+        predicate="within" if use_centroid else "intersects",
+        rsuffix="_zoning",
     )
+
+    # Normalize joined zoning columns when name collisions add suffixes.
+    # Keep canonical `zone_class` and `zone_type` downstream.
+    if "zone_class" not in joined.columns:
+        for candidate in ("zone_class__zoning", "zone_class_zoning", "ZONE_CLASS", "ZONE_CLASS__zoning", "zoning_class"):
+            if candidate in joined.columns:
+                joined["zone_class"] = joined[candidate]
+                break
+
+    if "zone_type" not in joined.columns:
+        for candidate in ("zone_type__zoning", "zone_type_zoning", "ZONE_TYPE", "ZONE_TYPE__zoning", "zoning_type"):
+            if candidate in joined.columns:
+                joined["zone_type"] = joined[candidate]
+                break
     
     # Restore original geometry if we used centroids
     if use_centroid and "_original_geometry" in joined.columns:
@@ -142,8 +169,11 @@ def spatial_join_parcels_to_zoning(
         joined = joined.drop(columns=["index_right"])
     
     # Calculate join rate
-    join_rate = (joined["zone_class"].notna().sum() / len(joined)) * 100 if "zone_class" in joined.columns else 0
-    print(f"  Join rate: {join_rate:.1f}% of parcels matched to zoning polygons")
+    if "zone_class" in joined.columns:
+        join_rate = (joined["zone_class"].notna().sum() / len(joined)) * 100
+        print(f"  Join rate: {join_rate:.1f}% of parcels matched to zoning polygons")
+    else:
+        print("  WARNING: Spatial join completed, but no zone_class column found in output")
     
     return joined
 
