@@ -117,6 +117,8 @@ const TOUR_STOPS = [
     desc: "Pilsen neighbourhood — potential Circle Line infill station area." },
   { name: "Near South Side Study Area", center: [-87.623, 41.859], zoom: 15,
     desc: "Primary study area for property-value uplift modelling." },
+  { name: "Soldier Field Analysis", center: [-87.622, 41.859], zoom: 14.5,
+    desc: "Soldier Field tear-down: comparing to the reference neighborhood (Roosevelt/Indiana/Cermak/Clark)." },
 ];
 
 // ---------------------------------------------------------------------------

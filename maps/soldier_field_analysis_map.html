@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soldier Field Tear-Down Analysis — Plan for Chicago 2030</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Segoe UI", system-ui, sans-serif; }
+    #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+
+    .info-panel {
+      position: absolute; top: 12px; right: 12px; z-index: 1000;
+      background: #fff; border-radius: 8px; padding: 14px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25); max-width: 340px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .info-panel h2 { font-size: 15px; color: #003366; margin-bottom: 6px; }
+    .info-panel .stat { display: flex; justify-content: space-between; }
+    .info-panel .stat span:last-child { font-weight: 600; }
+    .info-panel hr { border: none; border-top: 1px solid #ddd; margin: 8px 0; }
+    .info-panel .section-head {
+      font-weight: 700; font-size: 12px; text-transform: uppercase;
+      letter-spacing: .5px; margin-bottom: 4px;
+    }
+    .ref-color { color: #2166ac; }
+    .sf-color  { color: #b2182b; }
+
+    .legend {
+      position: absolute; bottom: 30px; left: 12px; z-index: 1000;
+      background: #fff; border-radius: 6px; padding: 10px 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2); font-size: 12px;
+    }
+    .legend h4 { margin-bottom: 6px; font-size: 13px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+    .legend-swatch {
+      width: 20px; height: 14px; border-radius: 2px; flex-shrink: 0;
+    }
+
+    .back-link {
+      position: absolute; top: 12px; left: 12px; z-index: 1000;
+      background: #003366; color: #fff; padding: 6px 12px;
+      border-radius: 5px; text-decoration: none; font-size: 13px;
+    }
+    .back-link:hover { background: #004488; }
+  </style>
+</head>
+<body>
+
+<a class="back-link" href="../site/index.html">&larr; Back to project</a>
+
+<div id="map"></div>
+
+<!-- Summary panel -->
+<div class="info-panel">
+  <h2>Soldier Field Tear-Down Analysis</h2>
+  <p style="font-size:12px; color:#666; margin-bottom:8px;">
+    What if we extended the street grid over Soldier Field and built a
+    neighborhood like the one just to its west?
+  </p>
+
+  <div class="section-head ref-color">Reference Neighborhood</div>
+  <div style="font-size:11px; color:#888; margin-bottom:2px;">Roosevelt / Indiana / Cermak / Clark</div>
+  <div class="stat"><span>Parcels</span><span id="ref-parcels">—</span></div>
+  <div class="stat"><span>Area</span><span id="ref-acres">—</span></div>
+  <div class="stat"><span>Market Value</span><span id="ref-market">—</span></div>
+  <div class="stat"><span>Value / Acre</span><span id="ref-per-acre">—</span></div>
+  <div class="stat"><span>Annual Tax Rev</span><span id="ref-tax">—</span></div>
+
+  <hr />
+
+  <div class="section-head sf-color">Soldier Field + South Parking (projected)</div>
+  <div class="stat"><span>Footprint</span><span id="sf-acres">—</span></div>
+  <div class="stat"><span>Est. Parcels</span><span id="sf-parcels">—</span></div>
+  <div class="stat"><span>Projected Value</span><span id="sf-market">—</span></div>
+  <div class="stat"><span>Annual Tax Rev</span><span id="sf-tax">—</span></div>
+
+  <hr />
+  <p style="font-size:11px; color:#555;">
+    Values derived from Cook County Assessor data (2023 tax year).
+    Market value estimated at 10× assessed value.
+  </p>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <h4>Legend</h4>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background: rgba(33,102,172,0.25); border: 2px solid #2166ac;"></div>
+    Reference Neighborhood
+  </div>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background: rgba(178,24,43,0.20); border: 2px solid #b2182b;"></div>
+    Soldier Field + Parking
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Data (from config.py)
+// ---------------------------------------------------------------------------
+const REF_BOUNDS = [[41.8524, -87.6308], [41.8674, -87.6219]];  // SW, NE
+const SF_BOUNDS  = [[41.8530, -87.6200], [41.8650, -87.6100]];  // SW, NE
+
+// Pre-computed results (from soldier_field_analysis.py output)
+const REF = {
+  parcels: 13343,
+  acres: 304.5,
+  marketValue: 4856645370,
+  perAcre: 15951430,
+  annualTax: 12141613,
+};
+const SF = {
+  acres: 273.7,
+  parcels: 11993,
+  marketValue: 4365585368,
+  annualTax: 10913963,
+};
+
+// ---------------------------------------------------------------------------
+// Formatting helpers
+// ---------------------------------------------------------------------------
+function fmtD(n) { return n.toLocaleString("en-US"); }
+function fmtM(n) {
+  if (n >= 1e9) return "$" + (n / 1e9).toFixed(2) + "B";
+  if (n >= 1e6) return "$" + (n / 1e6).toFixed(1) + "M";
+  return "$" + n.toLocaleString("en-US");
+}
+
+// ---------------------------------------------------------------------------
+// Map
+// ---------------------------------------------------------------------------
+const center = [
+  (REF_BOUNDS[0][0] + SF_BOUNDS[1][0]) / 2,
+  (REF_BOUNDS[0][1] + SF_BOUNDS[1][1]) / 2,
+];
+
+const map = L.map("map", { center: center, zoom: 14 });
+
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  maxZoom: 20,
+  attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+  subdomains: "abcd",
+}).addTo(map);
+
+// Reference area rectangle
+const refRect = L.rectangle(REF_BOUNDS, {
+  color: "#2166ac", weight: 3, fillColor: "#2166ac", fillOpacity: 0.15,
+}).addTo(map);
+refRect.bindPopup(
+  `<b style="color:#2166ac">Reference Neighborhood</b><br>` +
+  `Roosevelt / Indiana / Cermak / Clark<br><br>` +
+  `<b>${fmtD(REF.parcels)}</b> parcels &middot; <b>${REF.acres.toFixed(0)} acres</b><br>` +
+  `Market value: <b>${fmtM(REF.marketValue)}</b><br>` +
+  `Value/acre: <b>${fmtM(REF.perAcre)}</b><br>` +
+  `Annual tax: <b>${fmtM(REF.annualTax)}</b>`
+);
+
+// Soldier Field rectangle
+const sfRect = L.rectangle(SF_BOUNDS, {
+  color: "#b2182b", weight: 3, fillColor: "#b2182b", fillOpacity: 0.12,
+  dashArray: "8 4",
+}).addTo(map);
+sfRect.bindPopup(
+  `<b style="color:#b2182b">Soldier Field + South Parking</b><br>` +
+  `<em>Projected as mixed-use neighborhood</em><br><br>` +
+  `Footprint: <b>${SF.acres.toFixed(0)} acres</b> &middot; Est. <b>${fmtD(SF.parcels)}</b> parcels<br>` +
+  `Projected value: <b>${fmtM(SF.marketValue)}</b><br>` +
+  `Annual tax: <b>${fmtM(SF.annualTax)}</b>`
+);
+
+// Labels
+function addLabel(bounds, text, color) {
+  const lat = (bounds[0][0] + bounds[1][0]) / 2;
+  const lng = (bounds[0][1] + bounds[1][1]) / 2;
+  L.marker([lat, lng], {
+    icon: L.divIcon({
+      className: "",
+      html: `<div style="
+        white-space: nowrap; font-size: 12px; font-weight: 700;
+        color: ${color}; text-shadow: 0 0 4px #fff, 0 0 4px #fff;
+        transform: translate(-50%, -50%);
+      ">${text}</div>`,
+      iconSize: [0, 0],
+    }),
+  }).addTo(map);
+}
+addLabel(REF_BOUNDS, "Reference Neighborhood", "#2166ac");
+addLabel(SF_BOUNDS, "Soldier Field + Parking", "#b2182b");
+
+// Fit both rectangles
+map.fitBounds(L.latLngBounds(
+  [Math.min(REF_BOUNDS[0][0], SF_BOUNDS[0][0]) - 0.003,
+   Math.min(REF_BOUNDS[0][1], SF_BOUNDS[0][1]) - 0.003],
+  [Math.max(REF_BOUNDS[1][0], SF_BOUNDS[1][0]) + 0.003,
+   Math.max(REF_BOUNDS[1][1], SF_BOUNDS[1][1]) + 0.003]
+));
+
+// ---------------------------------------------------------------------------
+// Populate info panel
+// ---------------------------------------------------------------------------
+document.getElementById("ref-parcels").textContent  = fmtD(REF.parcels);
+document.getElementById("ref-acres").textContent    = REF.acres.toFixed(1) + " acres";
+document.getElementById("ref-market").textContent   = fmtM(REF.marketValue);
+document.getElementById("ref-per-acre").textContent = fmtM(REF.perAcre);
+document.getElementById("ref-tax").textContent      = fmtM(REF.annualTax) + "/yr";
+
+document.getElementById("sf-acres").textContent   = SF.acres.toFixed(1) + " acres";
+document.getElementById("sf-parcels").textContent = fmtD(SF.parcels);
+document.getElementById("sf-market").textContent  = fmtM(SF.marketValue);
+document.getElementById("sf-tax").textContent     = fmtM(SF.annualTax) + "/yr";
+</script>
+
+</body>
+</html>

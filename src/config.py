@@ -117,6 +117,26 @@ STUDY_AREA = {
     "max_lat": 41.867,
 }
 
+# --- Soldier Field Tear-Down Analysis ---
+
+# Reference neighborhood: the mixed-use area bounded by
+# Roosevelt Rd (N), Indiana Ave (E), Cermak Rd (S), Clark St (W).
+REFERENCE_AREA = {
+    "min_lon": -87.6308,   # Clark St
+    "max_lon": -87.6219,   # Indiana Ave
+    "min_lat": 41.8524,    # Cermak Rd
+    "max_lat": 41.8674,    # Roosevelt Rd
+}
+
+# Soldier Field + south parking lots footprint.
+# Stadium sits at ~41.8623, -87.6167; south lots extend to ~18th St.
+SOLDIER_FIELD_AREA = {
+    "min_lon": -87.6200,   # west edge (Columbus Dr)
+    "max_lon": -87.6100,   # east edge (lakefront)
+    "min_lat": 41.8530,    # south edge of parking lots (~18th St)
+    "max_lat": 41.8650,    # north edge of stadium
+}
+
 # Historical years to analyze
 HISTORICAL_YEARS = [2000, 2005, 2010, 2015, 2020, 2023, 2024, 2025]
 
