@@ -3,7 +3,7 @@ Analyze Area — Near South Side Parcel Analysis
 ===============================================
 Loads Cook County parcel + assessment CSVs, merges on PIN, filters to a
 bounding box (Near South Side), exports parcels to CSV, and generates
-an interactive Folium value map.
+an interactive PyDeck value map.
 
 Usage:
     python -m src.analyze_area
@@ -11,8 +11,6 @@ Usage:
 
 import geopandas as gpd
 import pandas as pd
-import folium
-from folium.plugins import MarkerCluster
 from shapely.geometry import Point, Polygon
 import warnings
 
@@ -20,6 +18,10 @@ from src.config import (
     RAW_ASSESSMENT_CSV, RAW_PARCEL_UNIVERSE_CSV,
     PARCELS_IN_AREA_CSV, AREA_VALUE_MAP,
     STUDY_AREA, PROCESSED_DIR, MAPS_DIR, ensure_dirs,
+)
+from src.pydeck_utils import (
+    create_deck, save_map, geojson_fill_layer, scatterplot_layer,
+    rgba_column, legend_html, hex_to_rgba,
 )
 
 # --- Configuration ---
@@ -145,55 +147,74 @@ def main():
     print(f"Saved to '{PARCELS_IN_AREA_CSV}'")
 
     # --- Create map ---
-    map_center = [bbox.centroid.y, bbox.centroid.x]
-    m = folium.Map(location=map_center, zoom_start=15, tiles="CartoDB positron")
+    map_center = (bbox.centroid.y, bbox.centroid.x)
+    layers = []
 
-    folium.GeoJson(
-        bbox_gdf.__geo_interface__,
-        name="Area Boundary",
-        style_function=lambda feature: {"color": "red", "weight": 3, "fillOpacity": 0},
-    ).add_to(m)
+    # Bounding box outline
+    layers.append(geojson_fill_layer(
+        "area-boundary",
+        bbox_gdf,
+        get_fill_color=[0, 0, 0, 0],
+        get_line_color=[255, 0, 0, 220],
+        line_width_min_pixels=3,
+        pickable=False,
+    ))
 
     parcels_in_area = parcels_in_area.dropna(subset=[VALUE_COLUMN, "geometry"])
     if not parcels_in_area.empty:
         import numpy as np
         parcels_in_area["value_quantile"] = pd.qcut(parcels_in_area[VALUE_COLUMN], 5, labels=False, duplicates="drop")
-        colors = ["#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8"]
+        colors = [
+            [255, 255, 204],  # #ffffcc
+            [199, 233, 180],  # #c7e9b4
+            [127, 205, 187],  # #7fcdbb
+            [65,  182, 196],  # #41b6c4
+            [44,  127, 184],  # #2c7fb8
+        ]
 
-        def get_color(q):
-            return colors[int(q)] if pd.notna(q) else "#808080"
+        def _color(row):
+            q = row.get("value_quantile")
+            if pd.notna(q):
+                return colors[int(q)] + [180]
+            return [128, 128, 128, 120]
 
-        points_layer = folium.FeatureGroup(name="Parcel Values (Points)")
-        for _, row in parcels_in_area.iterrows():
-            tooltip = f"PIN: {row[PIN_COLUMN_UNIVERSE]}<br>Value: ${row[VALUE_COLUMN]:,.0f}"
-            for attr in UNIVERSE_ATTRIBUTES:
-                if attr in row and pd.notna(row[attr]):
-                    tooltip += f"<br>{attr.replace('_', ' ').title()}: {row[attr]}"
-            folium.CircleMarker(
-                location=[row.geometry.y, row.geometry.x],
-                radius=3,
-                color=get_color(row["value_quantile"]),
-                fill=True,
-                fill_color=get_color(row["value_quantile"]),
-                fill_opacity=0.7,
-                tooltip=tooltip,
-            ).add_to(points_layer)
-        points_layer.add_to(m)
+        parcels_in_area = rgba_column(parcels_in_area, _color)
 
-        legend_html = f'''
-        <div style="position: fixed; bottom: 50px; left: 50px; width: 150px; height: 90px;
-        border:2px solid grey; z-index:9999; font-size:14px;
-        background-color: white; opacity: 0.8;">
-        &nbsp;<b>Value Quantile</b><br>
-        &nbsp;<i class="fa fa-circle" style="color:{colors[0]}"></i>&nbsp; Lowest<br>
-        &nbsp;...<br>
-        &nbsp;<i class="fa fa-circle" style="color:{colors[-1]}"></i>&nbsp; Highest
-        </div>
-        '''
-        m.get_root().html.add_child(folium.Element(legend_html))
+        # Add lon/lat columns for ScatterplotLayer
+        parcels_in_area["longitude"] = parcels_in_area.geometry.x
+        parcels_in_area["latitude"] = parcels_in_area.geometry.y
 
-    folium.LayerControl().add_to(m)
-    m.save(str(AREA_VALUE_MAP))
+        layers.append(scatterplot_layer(
+            "parcel-values",
+            parcels_in_area,
+            get_position="[longitude, latitude]",
+            get_fill_color="rgba",
+            get_radius=30,
+            radius_min_pixels=2,
+            radius_max_pixels=8,
+        ))
+
+        legend_desc = legend_html(
+            "Value Quantile",
+            [
+                ("#ffffcc", "Lowest"),
+                ("#c7e9b4", "Low"),
+                ("#7fcdbb", "Medium"),
+                ("#41b6c4", "High"),
+                ("#2c7fb8", "Highest"),
+            ],
+        )
+    else:
+        legend_desc = ""
+
+    deck = create_deck(
+        layers,
+        center=map_center,
+        zoom=15,
+        tooltip_html="<b>PIN:</b> {pin}<br><b>Value:</b> ${certified_tot}",
+        description=legend_desc,
+    )
+    save_map(deck, AREA_VALUE_MAP)
     print(f"Value map saved to '{AREA_VALUE_MAP}'")
 
 

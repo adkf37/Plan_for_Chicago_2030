@@ -2,7 +2,7 @@
 Compare Zoning Scenarios
 ========================
 Compares current vs. proposed upzoning (e.g., RS-3 -> RT-4), calculates
-FAR changes, and creates a Folium comparison map.
+FAR changes, and creates a PyDeck comparison map.
 
 Usage:
     python -m src.compare_zoning_scenarios
@@ -10,13 +10,16 @@ Usage:
 
 import geopandas as gpd
 import pandas as pd
-import folium
 import numpy as np
 
 from src.config import (
     CHICAGO_ZONING_GEOJSON, ZONING_CODES_CSV,
     COMPARISON_MAP, UPZONING_CHANGES_CSV,
     MAPS_DIR, PROCESSED_DIR, ensure_dirs,
+)
+from src.pydeck_utils import (
+    create_deck, save_map, geojson_fill_layer, rgba_column,
+    legend_html, hex_to_rgba,
 )
 
 
@@ -83,47 +86,44 @@ def main():
     print(f"Parcels changed: {changed_parcels:,} ({pct_changed:.1f}%)")
 
     # Create comparison map
-    chicago_center = [zoning_gdf.geometry.centroid.y.mean(), zoning_gdf.geometry.centroid.x.mean()]
-    m = folium.Map(location=chicago_center, zoom_start=11, tiles="CartoDB positron")
-
-    def style_function(feature):
-        current = feature["properties"].get("ZONE_CLASS", "")
-        proposed = feature["properties"].get("proposed_zone", "")
-        if current != proposed:
-            fc = feature["properties"].get("far_change", 0)
-            opacity = min(0.3 + (fc * 0.3), 0.8)
-            return {"fillColor": "#ff4444", "color": "#cc0000", "weight": 1, "fillOpacity": opacity}
-        return {"fillColor": "#cccccc", "color": "#999999", "weight": 0.3, "fillOpacity": 0.1}
+    chicago_center = (zoning_gdf.geometry.centroid.y.mean(), zoning_gdf.geometry.centroid.x.mean())
 
     changed_zones = zoning_gdf[zoning_gdf["ZONE_CLASS"] != zoning_gdf["proposed_zone"]].copy()
-    if len(changed_zones) > 0:
-        folium.GeoJson(
-            changed_zones,
-            name="Upzoned Areas",
-            style_function=style_function,
-            tooltip=folium.GeoJsonTooltip(
-                fields=["ZONE_CLASS", "proposed_zone", "far_change"],
-                aliases=["Current:", "Proposed:", "FAR Increase:"],
-            ),
-        ).add_to(m)
 
-    legend_html = f'''
-    <div style="position: fixed; top: 80px; right: 50px; width: 250px;
-    border:2px solid grey; z-index:9999; font-size:12px;
-    background-color: white; opacity: 0.95; padding: 15px;">
-    <p style="font-weight: bold; font-size: 14px;">Scenario: RS-3 -> RT-4</p>
-    <p><i class="fa fa-square" style="color:#ff4444"></i> Upzoned</p>
-    <p><i class="fa fa-square" style="color:#cccccc"></i> Unchanged</p>
-    <hr>
-    <p style="font-size: 11px;">
-    {changed_parcels:,} parcels ({pct_changed:.1f}%)<br>
-    FAR increase: {far_increase:,.0f} ({far_pct_increase:.1f}%)
-    </p></div>
-    '''
-    m.get_root().html.add_child(folium.Element(legend_html))
-    folium.LayerControl().add_to(m)
-    m.save(str(COMPARISON_MAP))
-    print(f"\nSaved map: {COMPARISON_MAP}")
+    if len(changed_zones) > 0:
+        # Pre-compute RGBA fill colour based on FAR change
+        def _color(row):
+            fc = row.get("far_change", 0)
+            alpha = int(min(75 + (fc * 75), 200))
+            return [255, 68, 68, alpha]
+
+        changed_zones = rgba_column(changed_zones, _color)
+
+        layer = geojson_fill_layer(
+            "upzoned-areas",
+            changed_zones,
+            get_fill_color="rgba",
+            get_line_color=[204, 0, 0, 180],
+            line_width_min_pixels=1,
+        )
+    else:
+        layer = geojson_fill_layer("upzoned-areas", {"type": "FeatureCollection", "features": []})
+
+    legend = legend_html(
+        f"Scenario: RS-3 → RT-4",
+        [("#ff4444", "Upzoned"), ("#cccccc", "Unchanged")],
+        footer=f"{changed_parcels:,} parcels ({pct_changed:.1f}%)<br>"
+               f"FAR increase: {far_increase:,.0f} ({far_pct_increase:.1f}%)",
+    )
+
+    deck = create_deck(
+        [layer],
+        center=chicago_center,
+        zoom=11,
+        tooltip_html="<b>{ZONE_CLASS}</b> → {proposed_zone}<br>FAR Δ: {far_change}",
+        description=legend,
+    )
+    save_map(deck, COMPARISON_MAP)
 
     # Export CSV
     export = changed_zones[["ZONE_CLASS", "proposed_zone", "current_far", "proposed_far", "far_change", "far_pct_change"]].copy()

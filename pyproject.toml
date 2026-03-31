@@ -12,9 +12,10 @@ dependencies = [
     "geopandas>=0.14",
     "shapely>=2.0",
     "requests>=2.31",
-    "folium>=0.15",
+    "pydeck>=0.9",
     "matplotlib>=3.8",
     "seaborn>=0.13",
+    "pmtiles>=3.2",
     "osmnx>=1.7",
     "python-dotenv>=1.0",
 ]

@@ -1,19 +1,20 @@
 """
 Chicago Interactive Map — City-Wide Data Layers
 ================================================
-Creates a comprehensive Folium map with street network, parcels, zoning,
+Creates a comprehensive PyDeck map with street network, parcels, zoning,
 census tracts, and assessment overlays.
 
 Usage:
     python -m viz.loading_data
 """
 
-import folium
-from folium.plugins import Draw
-
 from src.config import (
     PARCEL_GEOJSON, ZONING_GEOJSON, ASSESSMENT_GEOJSON,
     INTERACTIVE_MAP, ensure_dirs,
+)
+from src.pydeck_utils import (
+    create_deck, save_map, geojson_fill_layer,
+    legend_html, hex_to_rgba,
 )
 
 
@@ -51,40 +52,72 @@ def main():
     zoning = _load_geojson(gpd, ZONING_GEOJSON, "Zoning")
     assessment_df = _load_geojson(gpd, ASSESSMENT_GEOJSON, "Assessment")
 
-    # Build map
-    center = [chicago_polygon.centroid.y, chicago_polygon.centroid.x] if chicago_polygon else [41.88, -87.63]
-    m = folium.Map(location=center, zoom_start=11, tiles="CartoDB positron")
+    # Build map layers
+    center = (chicago_polygon.centroid.y, chicago_polygon.centroid.x) if chicago_polygon else (41.88, -87.63)
+    layers = []
 
     if chicago_gdf is not None:
-        folium.GeoJson(
-            chicago_gdf.__geo_interface__, name="Chicago Boundary",
-            style_function=lambda f: {"color": "green", "weight": 2, "fillOpacity": 0},
-        ).add_to(m)
+        chicago_gdf["rgba"] = [[0, 128, 0, 0]] * len(chicago_gdf)
+        layers.append(geojson_fill_layer(
+            "boundary",
+            chicago_gdf,
+            get_fill_color=[0, 128, 0, 0],
+            get_line_color=[0, 128, 0, 200],
+            line_width_min_pixels=2,
+            pickable=False,
+        ))
 
     if roads is not None:
-        folium.GeoJson(
-            roads.__geo_interface__, name="Roads",
-            style_function=lambda f: {"color": "red", "weight": 1},
-        ).add_to(m)
+        roads = roads.reset_index(drop=True)
+        layers.append(geojson_fill_layer(
+            "roads",
+            roads,
+            get_fill_color=[255, 0, 0, 0],
+            get_line_color=[255, 0, 0, 130],
+            line_width_min_pixels=1,
+            pickable=False,
+        ))
 
     if parcels is not None:
-        folium.GeoJson(
-            parcels.iloc[:1000], name="Parcels (Sample)",
-            style_function=lambda f: {"color": "purple", "weight": 0.5, "fillOpacity": 0.1},
-            tooltip=folium.features.GeoJsonTooltip(fields=["PIN"], aliases=["Parcel ID:"]),
-        ).add_to(m)
+        sample = parcels.iloc[:1000].copy()
+        sample["rgba"] = [[128, 0, 128, 25]] * len(sample)
+        layers.append(geojson_fill_layer(
+            "parcels-sample",
+            sample,
+            get_fill_color="rgba",
+            get_line_color=[128, 0, 128, 80],
+            line_width_min_pixels=0.5,
+        ))
 
     if zoning is not None:
-        folium.GeoJson(
-            zoning, name="Zoning Districts",
-            style_function=lambda f: {"fillColor": "orange", "color": "black", "weight": 1, "fillOpacity": 0.4},
-        ).add_to(m)
+        zoning["rgba"] = [[255, 165, 0, 100]] * len(zoning)
+        layers.append(geojson_fill_layer(
+            "zoning-districts",
+            zoning,
+            get_fill_color="rgba",
+            get_line_color=[0, 0, 0, 130],
+            line_width_min_pixels=1,
+        ))
 
-    Draw(export=True, filename="edited_data.geojson").add_to(m)
-    folium.LayerControl().add_to(m)
+    legend_desc = legend_html(
+        "City-Wide Layers",
+        [
+            ("#008000", "Chicago Boundary"),
+            ("#ff0000", "Roads"),
+            ("#800080", "Parcels (sample)"),
+            ("#ffa500", "Zoning Districts"),
+        ],
+        footer="Note: polygon draw tool removed in Deck.gl migration.",
+    )
 
-    m.save(str(INTERACTIVE_MAP))
-    print(f"\nSaved: {INTERACTIVE_MAP}")
+    deck = create_deck(
+        layers,
+        center=center,
+        zoom=11,
+        tooltip_html="<b>{PIN}</b>" if parcels is not None else None,
+        description=legend_desc,
+    )
+    save_map(deck, INTERACTIVE_MAP)
 
 
 def _load_geojson(gpd, path, label):

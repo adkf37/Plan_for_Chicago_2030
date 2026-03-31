@@ -26,7 +26,7 @@ src/            Core Python modules (all import from src.config)
   property_value.py       Property value simulation (placeholder)
   transportation.py       Transport network analysis (placeholder)
 viz/            Visualisation scripts
-  visualize_zoning.py     City-wide Folium zoning map
+  visualize_zoning.py     City-wide PyDeck zoning map
   visualize_appreciation.py  Appreciation charts (matplotlib/seaborn)
   loading_data.py         Multi-layer interactive map
 data/

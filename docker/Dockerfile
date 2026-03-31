@@ -2,9 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# System deps for GDAL/geopandas
+# System deps for GDAL/geopandas + tippecanoe (vector tile builder)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgdal-dev gdal-bin gcc g++ && \
+    libgdal-dev gdal-bin gcc g++ \
+    tippecanoe && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

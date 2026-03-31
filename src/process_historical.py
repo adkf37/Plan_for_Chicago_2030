@@ -15,7 +15,7 @@ from datetime import datetime
 
 from src.config import (
     RAW_HISTORICAL_CSV, RAW_ASSESSMENT_CSV,
-    ANALYSIS_RESULTS_DIR, ensure_dirs,
+    ANALYSIS_RESULTS_DIR, APPRECIATION_BY_ZONING_CSV, ensure_dirs,
 )
 
 
@@ -155,6 +155,11 @@ def save_results(app_by_zone, app_by_zone_year, parcel_stats):
     f1 = ANALYSIS_RESULTS_DIR / "historical_appreciation_by_zoning.csv"
     app_by_zone.to_csv(f1, index=False)
     print(f"Saved: {f1}")
+
+    # Also save to data/processed/ for pipeline consumption
+    APPRECIATION_BY_ZONING_CSV.parent.mkdir(parents=True, exist_ok=True)
+    app_by_zone.to_csv(APPRECIATION_BY_ZONING_CSV, index=False)
+    print(f"Saved: {APPRECIATION_BY_ZONING_CSV}")
 
     f2 = ANALYSIS_RESULTS_DIR / "appreciation_by_zone_year.csv"
     app_by_zone_year.to_csv(f2, index=False)

@@ -10,10 +10,10 @@ rich tooltips, and performant rendering of city-wide data.
 
 ## Tasks
 
-- [x] Build Folium-based city-wide zoning map (`viz/visualize_zoning.py`)
-- [x] Build multi-layer interactive map (`viz/loading_data.py`)
+- [x] Build Folium-based city-wide zoning map (`viz/visualize_zoning.py`) — migrated to PyDeck
+- [x] Build multi-layer interactive map (`viz/loading_data.py`) — migrated to PyDeck
 - [x] Add SimCity 2000-inspired colour scheme and density-encoded opacity
-- [x] Migrate from Folium → MapLibre GL JS for production performance (`site/map.html`, `site/js/map.js`)
+- [x] Migrate Folium → MapLibre GL JS → Deck.gl + PMTiles (`site/map.html`, `site/js/map.js`)
 - [x] Optimise GeoJSON with geometry simplification & coordinate truncation (`src/prepare_map_data.py`) — vector tiles deferred (tippecanoe requires Linux)
 - [x] Add layer toggle panel (current zoning, proposed zoning, transit, values)
 - [x] Implement before/after compare mode for current vs. proposed zoning (overlay toggle)
@@ -36,5 +36,5 @@ rich tooltips, and performant rendering of city-wide data.
 - Epic 05 (transit scores)
 
 ## Reference (from Plan Outline § 1)
-> MapLibre GL JS or Leaflet for interactive layering and toggles.  
-> Vector tiles for large datasets (parcels). Geometry simplification and data clustering.
+> Deck.gl for interactive layering and toggles (migrated from MapLibre GL JS).  
+> PMTiles vector tiles for large datasets (parcels). Geometry simplification and data clustering.

@@ -24,7 +24,7 @@ arguments, and case-study appendix.
 - [x] Create `site/index.html` landing page skeleton
 - [ ] Add responsive CSS framework (Pico CSS or Tailwind)
 - [ ] Write Introduction narrative section
-- [ ] Embed interactive map (iframe or MapLibre inline)
+- [ ] Embed interactive map (iframe or Deck.gl inline)
 - [ ] Create section pages (land-use.html, transport.html, housing.html, …)
 - [ ] Build infographics: housing type illustrations, before/after renderings
 - [ ] Write case-study summaries with citations

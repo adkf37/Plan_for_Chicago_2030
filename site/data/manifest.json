@@ -1,0 +1,18 @@
+{
+  "zoning": {
+    "file": "zoning.geojson",
+    "sourceType": "geojson"
+  },
+  "proposed_zoning": {
+    "file": "proposed_zoning.geojson",
+    "sourceType": "geojson"
+  },
+  "transit": {
+    "file": "transit_stations.geojson",
+    "sourceType": "geojson"
+  },
+  "parcels": {
+    "file": "parcels.geojson",
+    "sourceType": "geojson"
+  }
+}

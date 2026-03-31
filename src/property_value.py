@@ -112,9 +112,9 @@ def load_enriched_parcels() -> pd.DataFrame | None:
 
 def load_appreciation_rates() -> dict:
     """Return {zoning_type: avg_annual_appreciation} from historical analysis."""
-    path = ANALYSIS_RESULTS_DIR / "historical_appreciation_by_zoning.csv"
+    path = PROCESSED_DIR / "historical_appreciation_by_zoning.csv"
     if not path.exists():
-        path = PROCESSED_DIR / "historical_appreciation_by_zoning.csv"
+        path = ANALYSIS_RESULTS_DIR / "historical_appreciation_by_zoning.csv"
     if not path.exists():
         print(f"WARNING: Appreciation rates file not found ({path}).  Using 3 % default.")
         return {}

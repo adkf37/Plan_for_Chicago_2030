@@ -46,7 +46,7 @@ RAW_DIR = PROJECT_ROOT / "data" / "raw"
 RAW_ASSESSMENT_CSV = RAW_DIR / "Assessor_-_Assessed_Values_20250430.csv"
 RAW_PARCEL_UNIVERSE_CSV = RAW_DIR / "Assessor_-_Parcel_Universe_20250430.csv"
 RAW_HISTORICAL_DIR = RAW_DIR / "historical"
-RAW_HISTORICAL_CSV = RAW_HISTORICAL_DIR / "Assessor_-_Assessed_Values_since_1999_20251004.csv"
+RAW_HISTORICAL_CSV = RAW_DIR / "Assessor_-_Assessed_Values_since_1999_20251004.csv"
 
 # GeoJSON data (downloaded spatial files — gitignored)
 GEOJSON_DIR = PROJECT_ROOT / "data" / "geojson"
@@ -75,6 +75,7 @@ VALUE_PROJECTIONS_CSV = PROCESSED_DIR / "value_projections.csv"
 VALUE_MODEL_VALIDATION_CSV = PROCESSED_DIR / "value_model_validation.csv"
 TRANSIT_SCORES_CSV = PROCESSED_DIR / "transit_scores.csv"
 ZONING_SUMMARY_CSV = PROCESSED_DIR / "zoning_summary.csv"
+APPRECIATION_BY_ZONING_CSV = PROCESSED_DIR / "historical_appreciation_by_zoning.csv"
 
 # --- Output Paths ---
 

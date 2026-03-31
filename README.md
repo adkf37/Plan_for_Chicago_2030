@@ -9,12 +9,14 @@ interactive web map and accompanying policy website.
 | What | How |
 |------|-----|
 | Geospatial analysis | GeoPandas, Shapely, osmnx |
-| Interactive mapping | Folium → MapLibre GL JS (planned) |
+| Interactive mapping | Deck.gl (frontend) + PyDeck (standalone maps) + PMTiles (vector tiles) |
 | Scenario modelling | Rule-based upzoning + historical appreciation rates |
 | Property values | Cook County Assessor data (1999–2025) |
 | Website | Static HTML/CSS/JS in `site/` (GitHub Pages) |
 
 ## Quick Start
+
+### Option A — Local Python environment
 
 ```bash
 # 1. Clone & setup
@@ -30,7 +32,7 @@ python -m src.pipeline          # downloads data → zoning → transit → web 
 python -m src.download_data     # → data/geojson/ (parcels, zoning, transit)
 python -m src.zoning            # → data/processed/parcels_enriched.geojson
 python -m src.transportation    # → data/processed/transit_scores.csv
-python -m src.prepare_map_data  # → site/data/*.geojson (web map layers)
+python -m src.prepare_map_data  # → site/data/*.geojson + PMTiles (web map layers)
 
 # 3. Generate analysis maps
 python -m viz.visualize_zoning           # → maps/chicago_zoning_map.html
@@ -40,6 +42,36 @@ python -m src.analyze_area               # → maps/area_value_map.html
 # 4. Run tests
 pytest -q
 ```
+
+### Option B — Docker (recommended for PMTiles generation)
+
+Docker bundles **tippecanoe** (the GeoJSON → PMTiles converter) so you don't
+need to install it locally.  Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+```bash
+cp .env.example .env   # add your Socrata token (optional)
+
+# Build the image (only needed once, or after Dockerfile changes)
+docker compose -f docker/docker-compose.yml build
+
+# Download data & run the full pipeline
+docker compose -f docker/docker-compose.yml run --rm pipeline python -m src.pipeline
+
+# Export web-map layers + generate PMTiles
+docker compose -f docker/docker-compose.yml run --rm tiles
+
+# Serve the site locally at http://localhost:8080
+docker compose -f docker/docker-compose.yml up site
+```
+
+| Service | What it does |
+|---------|-------------|
+| `pipeline` | Runs any `src.*` command inside the container with data volumes mounted |
+| `tiles` | Runs `src.prepare_map_data` → exports GeoJSON layers + builds PMTiles via tippecanoe |
+| `site` | Serves `site/` via nginx on port 8080 for local preview |
+
+> **Note**: The `data/`, `maps/`, `reports/`, and `site/data/` directories are
+> bind-mounted, so all outputs land on your host machine as normal.
 
 See [QUICK_START.md](QUICK_START.md) for the full uplift-analysis walkthrough.
 
@@ -149,4 +181,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, style guide, and 
 ---
 
 **Status**: Active Development
-**Last Updated**: February 2026
+**Last Updated**: March 2026

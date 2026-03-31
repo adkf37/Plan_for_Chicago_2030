@@ -160,23 +160,28 @@ def test_export_zoning_layer(monkeypatch, tiny_zoning, tmp_path):
 # export_proposed_zoning_layer
 # ---------------------------------------------------------------------------
 
-def test_export_proposed_zoning(monkeypatch, tiny_enriched, tmp_path):
+def test_export_proposed_zoning(monkeypatch, tiny_zoning, tiny_stations, tmp_path):
     import src.prepare_map_data as mod
-    monkeypatch.setattr(mod, "PARCELS_ENRICHED_GEOJSON", tiny_enriched)
+    monkeypatch.setattr(mod, "ZONING_GEOJSON", tiny_zoning)
+    monkeypatch.setattr(mod, "CTA_STATIONS_GEOJSON", tiny_stations)
+    monkeypatch.setattr(mod, "METRA_STATIONS_GEOJSON", tmp_path / "no_metra.geojson")
     out = mod.export_proposed_zoning_layer(tmp_path)
     assert out is not None and out.exists()
     data = _read(out)
-    # Check that near-transit RS-3 was upzoned to RT-4
+    # tiny_zoning has RS-3, B1-2, RM-5; tiny_stations are nearby so RS-3 should upzone
+    found_rs3 = False
     for feat in data["features"]:
         p = feat["properties"]
-        if p.get("zone_class") == "RS-3":
+        zc = p.get("zone_class") or p.get("ZONE_CLASS")
+        if zc == "RS-3":
+            # Near-transit RS-3 → RT-4
             assert p["proposed_zone"] == "RT-4"
             assert p["changed"] is True
-        elif p.get("zone_class") == "RS-1":
-            assert p["proposed_zone"] == "RS-3"
-            assert p["changed"] is True
-        elif p.get("zone_class") == "RM-5":
+            found_rs3 = True
+        elif zc == "RM-5":
+            # RM-5 is not in the upzoning rules → unchanged
             assert p["changed"] is False
+    assert found_rs3, "Expected to find an RS-3 zone in output"
 
 
 # ---------------------------------------------------------------------------
@@ -241,3 +246,40 @@ def test_prepare_all_creates_manifest(monkeypatch, tiny_zoning, tiny_enriched, t
     assert manifest_path.exists()
     manifest = json.loads(manifest_path.read_text())
     assert "zoning" in manifest
+
+    # Enhanced manifest should include sourceType for each layer
+    for layer_key, entry in manifest.items():
+        assert "sourceType" in entry, f"manifest[{layer_key!r}] missing sourceType"
+        assert entry["sourceType"] in ("vector", "geojson"), (
+            f"manifest[{layer_key!r}] has unexpected sourceType: {entry['sourceType']}"
+        )
+        # GeoJSON fallback should always be present
+        if entry["sourceType"] == "vector":
+            assert "geojsonFallback" in entry
+
+
+# ---------------------------------------------------------------------------
+# PMTiles build helpers
+# ---------------------------------------------------------------------------
+
+def test_has_tippecanoe_returns_bool():
+    """_has_tippecanoe() should return True/False without raising."""
+    from src.prepare_map_data import _has_tippecanoe
+    result = _has_tippecanoe()
+    assert isinstance(result, bool)
+
+
+def test_build_all_pmtiles_skips_gracefully(monkeypatch, tiny_zoning, tmp_path):
+    """build_all_pmtiles should not crash when tippecanoe is absent."""
+    import src.prepare_map_data as mod
+    # Force tippecanoe to be absent
+    monkeypatch.setattr(mod, "_has_tippecanoe", lambda: False)
+    out_dir = tmp_path / "tiles"
+    out_dir.mkdir()
+    # Create a minimal GeoJSON for the layer
+    zoning_path = out_dir / "zoning.geojson"
+    zoning_path.write_text(tiny_zoning.read_text())
+    # build_all_pmtiles needs a geojson_results dict mapping layer_id → Path
+    geojson_results = {"zoning": zoning_path}
+    # Should not raise
+    mod.build_all_pmtiles(out_dir, geojson_results)

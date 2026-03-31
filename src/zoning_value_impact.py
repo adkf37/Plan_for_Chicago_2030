@@ -10,7 +10,6 @@ Usage:
 
 import geopandas as gpd
 import pandas as pd
-import folium
 import numpy as np
 
 from src.config import (
@@ -19,6 +18,10 @@ from src.config import (
     FAR_APPRECIATION_RATE, ZONE_TRANSITION_FACTORS,
     DEVELOPMENT_RIGHTS_ADJUSTMENT, MEDIAN_VALUES_BY_ZONE,
     ensure_dirs,
+)
+from src.pydeck_utils import (
+    create_deck, save_map, geojson_fill_layer, rgba_column,
+    legend_html, hex_to_rgba,
 )
 
 
@@ -103,40 +106,57 @@ def main():
     print(f"Total estimated value increase: ${total_increase:,.0f}")
 
     # Map
-    chicago_center = [zoning_gdf.geometry.centroid.y.mean(), zoning_gdf.geometry.centroid.x.mean()]
-    m = folium.Map(location=chicago_center, zoom_start=11, tiles="CartoDB positron")
+    chicago_center = (zoning_gdf.geometry.centroid.y.mean(), zoning_gdf.geometry.centroid.x.mean())
 
     def get_color(pct):
         if pct >= 20:
-            return "#006d2c"
+            return [0, 109, 44, 180]
         elif pct >= 15:
-            return "#31a354"
+            return [49, 163, 84, 180]
         elif pct >= 10:
-            return "#74c476"
+            return [116, 196, 118, 180]
         elif pct >= 5:
-            return "#bae4b3"
-        return "#edf8e9"
-
-    def style_fn(feature):
-        uplift = feature["properties"].get("value_uplift_pct", 0)
-        if uplift > 0:
-            return {"fillColor": get_color(uplift), "color": "#252525", "weight": 1, "fillOpacity": 0.7}
-        return {"fillColor": "#cccccc", "color": "#999999", "weight": 0.3, "fillOpacity": 0.1}
+            return [186, 228, 179, 180]
+        return [237, 248, 233, 180]
 
     if len(changed_zones) > 0:
-        folium.GeoJson(
-            changed_zones,
-            name="Value Impact",
-            style_function=style_fn,
-            tooltip=folium.GeoJsonTooltip(
-                fields=["ZONE_CLASS", "proposed_zone", "value_uplift_pct"],
-                aliases=["Current:", "Proposed:", "Value Increase %:"],
-            ),
-        ).add_to(m)
+        def _color(row):
+            uplift = row.get("value_uplift_pct", 0)
+            if uplift > 0:
+                return get_color(uplift)
+            return [204, 204, 204, 25]
 
-    folium.LayerControl().add_to(m)
-    m.save(str(VALUE_IMPACT_MAP))
-    print(f"\nSaved map: {VALUE_IMPACT_MAP}")
+        changed_zones = rgba_column(changed_zones, _color)
+
+        layer = geojson_fill_layer(
+            "value-impact",
+            changed_zones,
+            get_fill_color="rgba",
+            get_line_color=[37, 37, 37, 180],
+            line_width_min_pixels=1,
+        )
+    else:
+        layer = geojson_fill_layer("value-impact", {"type": "FeatureCollection", "features": []})
+
+    legend_desc = legend_html(
+        "Value Uplift",
+        [
+            ("#006d2c", "≥ 20%"),
+            ("#31a354", "15–20%"),
+            ("#74c476", "10–15%"),
+            ("#bae4b3", "5–10%"),
+            ("#edf8e9", "< 5%"),
+        ],
+    )
+
+    deck = create_deck(
+        [layer],
+        center=chicago_center,
+        zoom=11,
+        tooltip_html="<b>{ZONE_CLASS}</b> → {proposed_zone}<br>Value Uplift: {value_uplift_pct}%",
+        description=legend_desc,
+    )
+    save_map(deck, VALUE_IMPACT_MAP)
 
     # Export CSV
     export_cols = [

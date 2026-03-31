@@ -28,6 +28,12 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
+# Ensure stdout/stderr handle Unicode box-drawing chars on Windows
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # Configure logging before any other imports
 logging.basicConfig(
     level=logging.INFO,
@@ -164,7 +170,8 @@ def run_pipeline(skip_download: bool = False, skip_zoning: bool = False, skip_tr
         
         logger.info(f"│   ✓ Generated {len(results)} map layers:")
         for name, info in results.items():
-            logger.info(f"│     • {name}: {info.get('features', '?'):,} features")
+            label = info.name if info is not None else "failed"
+            logger.info(f"│     • {name}: {label}")
         
         logger.info(f"│   → {SITE_DATA_DIR}/")
         logger.info("└─")

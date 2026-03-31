@@ -1,107 +1,120 @@
 /**
- * Plan for Chicago 2030 — MapLibre GL JS Interactive Map
- * ======================================================
- * Loads optimised GeoJSON layers from site/data/, provides toggleable
- * overlays, parcel pop-ups, story-map guided tours, geocoding, and
- * before/after comparison support.
+ * Plan for Chicago 2030 — Deck.gl Interactive Map
+ * ================================================
+ * Loads optimised PMTiles (vector tiles) or GeoJSON layers from site/data/,
+ * provides toggleable overlays, parcel pop-ups, story-map guided tours,
+ * geocoding, and before/after comparison support.
+ *
+ * Uses deck.gl 9.x UMD bundle loaded via CDN.
  */
 
-/* global maplibregl */
+/* global deck, pmtiles */
 
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
-const DATA_BASE = "data/";          // relative to site/
+const DATA_BASE = "data/";
 const CHICAGO_CENTER = [-87.6298, 41.8781];
 const INITIAL_ZOOM = 10.5;
 
-// Layer definitions: id → { file, type, paint, ... }
+// Color helpers
+function hexToRGBA(hex, alpha = 255) {
+  hex = hex.replace("#", "");
+  if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+  return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16),
+          parseInt(hex.slice(4, 6), 16), alpha];
+}
+
+// TOD score → YlGnBu 5-stop color ramp
+const TOD_STOPS = [
+  { v: 0,   c: [255, 255, 204] },
+  { v: 25,  c: [161, 218, 180] },
+  { v: 50,  c: [65,  182, 196] },
+  { v: 75,  c: [44,  127, 184] },
+  { v: 100, c: [37,   52, 148] },
+];
+
+function todScoreColor(score, alpha = 140) {
+  if (score == null || isNaN(score)) return [200, 200, 200, 80];
+  score = Math.max(0, Math.min(100, score));
+  for (let i = 0; i < TOD_STOPS.length - 1; i++) {
+    const a = TOD_STOPS[i], b = TOD_STOPS[i + 1];
+    if (score <= b.v) {
+      const t = (score - a.v) / (b.v - a.v);
+      return [
+        Math.round(a.c[0] + t * (b.c[0] - a.c[0])),
+        Math.round(a.c[1] + t * (b.c[1] - a.c[1])),
+        Math.round(a.c[2] + t * (b.c[2] - a.c[2])),
+        alpha,
+      ];
+    }
+  }
+  return [...TOD_STOPS[TOD_STOPS.length - 1].c, alpha];
+}
+
+// Station type → color & radius
+const STATION_COLORS = {
+  CTA_L:    [31, 120, 180],
+  Metra:    [51, 160, 44],
+  Proposed: [227, 26, 28],
+};
+const STATION_RADII = { CTA_L: 80, Metra: 80, Proposed: 60 };
+
+// Layer definitions — id → config
 const LAYER_DEFS = {
   zoning: {
     file: "zoning.geojson",
-    sourceType: "geojson",
-    layerType: "fill",
-    paint: {
-      "fill-color": ["coalesce", ["get", "zone_color"], "#808080"],
-      "fill-opacity": 0.45,
-    },
-    outline: {
-      "line-color": "#000",
-      "line-width": 0.3,
-    },
     label: "Current Zoning",
     defaultOn: true,
     swatch: "#00ff00",
+    layerType: "polygon",
+    getFillColor: (d) => {
+      const c = (d.properties || d).zone_color || "#808080";
+      return hexToRGBA(c, 115);
+    },
+    getLineColor: [0, 0, 0, 50],
+    lineWidthMinPixels: 0.3,
   },
   proposed_zoning: {
     file: "proposed_zoning.geojson",
-    sourceType: "geojson",
-    layerType: "fill",
-    paint: {
-      "fill-color": [
-        "case",
-        ["==", ["get", "changed"], true], "#ff6600",
-        "#aaaaaa",
-      ],
-      "fill-opacity": 0.5,
-    },
-    outline: {
-      "line-color": "#333",
-      "line-width": 0.3,
-    },
     label: "Proposed Zoning",
     defaultOn: false,
     swatch: "#ff6600",
+    layerType: "polygon",
+    getFillColor: (d) => {
+      const changed = (d.properties || d).changed;
+      return changed === true || changed === "true"
+        ? [255, 102, 0, 128] : [170, 170, 170, 80];
+    },
+    getLineColor: [51, 51, 51, 50],
+    lineWidthMinPixels: 0.3,
   },
   transit: {
     file: "transit_stations.geojson",
-    sourceType: "geojson",
-    layerType: "circle",
-    paint: {
-      "circle-radius": [
-        "match", ["get", "station_type"],
-        "CTA_L", 5,
-        "Metra", 5,
-        "Proposed", 4,
-        4,
-      ],
-      "circle-color": [
-        "match", ["get", "station_type"],
-        "CTA_L", "#1f78b4",
-        "Metra", "#33a02c",
-        "Proposed", "#e31a1c",
-        "#999",
-      ],
-      "circle-stroke-width": 1,
-      "circle-stroke-color": "#fff",
-    },
     label: "Transit Stations",
     defaultOn: true,
     swatch: "#1f78b4",
+    layerType: "point",
+    getFillColor: (d) => {
+      const t = (d.properties || d).station_type;
+      return [...(STATION_COLORS[t] || [153, 153, 153]), 220];
+    },
+    getRadius: (d) => {
+      const t = (d.properties || d).station_type;
+      return STATION_RADII[t] || 60;
+    },
   },
   parcels: {
     file: "parcels.geojson",
-    sourceType: "geojson",
-    layerType: "fill",
-    paint: {
-      "fill-color": [
-        "interpolate", ["linear"],
-        ["coalesce", ["get", "tod_score"], 0],
-        0, "#ffffcc",
-        25, "#a1dab4",
-        50, "#41b6c4",
-        75, "#2c7fb8",
-        100, "#253494",
-      ],
-      "fill-opacity": 0.55,
-    },
-    outline: {
-      "line-color": "#555",
-      "line-width": 0.2,
-    },
     label: "Parcel Values / TOD",
     defaultOn: false,
     swatch: "#41b6c4",
+    layerType: "point",
+    getFillColor: (d) => {
+      const score = parseFloat((d.properties || d).tod_score) || 0;
+      return todScoreColor(score, 180);
+    },
+    getRadius: 40,
   },
 };
 
@@ -118,54 +131,79 @@ const TOUR_STOPS = [
   { name: "Near South Side Study Area", center: [-87.623, 41.859], zoom: 15,
     desc: "Primary study area for property-value uplift modelling." },
   { name: "Soldier Field Analysis", center: [-87.622, 41.859], zoom: 14.5,
-    desc: "Soldier Field tear-down: comparing to the reference neighborhood (Roosevelt/Indiana/Cermak/Clark)." },
+    desc: "Soldier Field tear-down: comparing to the reference neighborhood." },
 ];
 
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
-let map;
-const loadedSources = new Set();
+let deckgl;
+let manifest = {};
+let layerData = {};        // id → GeoJSON FeatureCollection or URL for MVT
+let layerVisible = {};     // id → boolean
+let currentPopup = null;   // DOM element for active popup
 
 // ---------------------------------------------------------------------------
 // Initialisation
 // ---------------------------------------------------------------------------
 function initMap() {
-  map = new maplibregl.Map({
+  // Set initial visibility from defaults
+  for (const [id, def] of Object.entries(LAYER_DEFS)) {
+    layerVisible[id] = def.defaultOn;
+  }
+
+  deckgl = new deck.DeckGL({
     container: "map",
-    style: {
-      version: 8,
-      name: "Chicago 2030",
-      sources: {
-        "carto-positron": {
-          type: "raster",
-          tiles: [
-            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-          ],
-          tileSize: 256,
-          attribution: '&copy; <a href="https://carto.com/">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-        },
-      },
-      layers: [{
-        id: "basemap",
-        type: "raster",
-        source: "carto-positron",
-        minzoom: 0,
-        maxzoom: 20,
-      }],
+    initialViewState: {
+      longitude: CHICAGO_CENTER[0],
+      latitude: CHICAGO_CENTER[1],
+      zoom: INITIAL_ZOOM,
+      pitch: 0,
+      bearing: 0,
     },
-    center: CHICAGO_CENTER,
-    zoom: INITIAL_ZOOM,
-    attributionControl: true,
+    controller: { keyboard: true, doubleClickZoom: true, touchRotate: true },
+    layers: [],
+    getTooltip: null,
+    onClick: (info, event) => {
+      if (info.layer && info.object) {
+        showPopup(info);
+      } else {
+        closePopup();
+      }
+    },
+    onViewStateChange: ({ viewState }) => {
+      // Close popup on pan/zoom to keep it from dangling
+      closePopup();
+    },
   });
 
-  map.addControl(new maplibregl.NavigationControl(), "top-right");
-  map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), "bottom-right");
+  // Load the CARTO Positron basemap as a TileLayer
+  loadManifestAndLayers();
+  wireUI();
+}
 
-  map.on("load", () => {
-    loadManifestAndLayers();
-    wireUI();
+// ---------------------------------------------------------------------------
+// Basemap
+// ---------------------------------------------------------------------------
+function createBasemapLayer() {
+  return new deck.TileLayer({
+    id: "basemap",
+    data: [
+      "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+      "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+      "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+    ],
+    minZoom: 0,
+    maxZoom: 20,
+    tileSize: 256,
+    renderSubLayers: (props) => {
+      const { boundingBox } = props.tile;
+      return new deck.BitmapLayer(props, {
+        data: null,
+        image: props.data,
+        bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]],
+      });
+    },
   });
 }
 
@@ -173,76 +211,125 @@ function initMap() {
 // Data loading
 // ---------------------------------------------------------------------------
 async function loadManifestAndLayers() {
-  let manifest;
   try {
     const resp = await fetch(DATA_BASE + "manifest.json");
     manifest = await resp.json();
   } catch {
-    // No manifest — try loading all layers anyway
     manifest = {};
-    for (const id of Object.keys(LAYER_DEFS)) manifest[id] = LAYER_DEFS[id].file;
+    for (const id of Object.keys(LAYER_DEFS)) {
+      manifest[id] = { file: LAYER_DEFS[id].file, sourceType: "geojson" };
+    }
   }
 
-  for (const [id, def] of Object.entries(LAYER_DEFS)) {
-    const filename = manifest[id] || def.file;
-    if (!filename) continue;
-    addLayerFromFile(id, DATA_BASE + filename, def);
-  }
+  // Load each layer's data
+  const promises = Object.entries(LAYER_DEFS).map(async ([id, def]) => {
+    const info = manifest[id];
+    if (!info) return;
+
+    // Normalize old manifest format (string instead of object)
+    const layerInfo = typeof info === "string" ? { file: info, sourceType: "geojson" } : info;
+
+    if (layerInfo.sourceType === "vector") {
+      // PMTiles — store the URL for MVTLayer
+      layerData[id] = {
+        type: "vector",
+        url: DATA_BASE + layerInfo.file,
+        sourceLayer: layerInfo.sourceLayer || id,
+        geojsonFallback: layerInfo.geojsonFallback ? DATA_BASE + layerInfo.geojsonFallback : null,
+      };
+    } else {
+      // GeoJSON — fetch and store
+      try {
+        const resp = await fetch(DATA_BASE + layerInfo.file);
+        if (!resp.ok) { console.warn(`Layer ${id}: ${resp.statusText}`); return; }
+        layerData[id] = { type: "geojson", data: await resp.json() };
+      } catch (err) {
+        console.warn(`Could not load layer ${id}:`, err);
+      }
+    }
+    console.log(`Layer loaded: ${id} (${layerData[id]?.type})`);
+  });
+
+  await Promise.all(promises);
+  rebuildLayers();
 }
 
-async function addLayerFromFile(id, url, def) {
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) { console.warn(`Layer ${id}: ${resp.statusText}`); return; }
-    const data = await resp.json();
+// ---------------------------------------------------------------------------
+// Layer construction
+// ---------------------------------------------------------------------------
+function rebuildLayers() {
+  const layers = [createBasemapLayer()];
 
-    map.addSource(id, { type: "geojson", data });
-    loadedSources.add(id);
+  for (const [id, def] of Object.entries(LAYER_DEFS)) {
+    const info = layerData[id];
+    if (!info) continue;
+    const visible = layerVisible[id];
 
-    if (def.layerType === "fill") {
-      map.addLayer({
-        id: id + "-fill",
-        type: "fill",
-        source: id,
-        paint: def.paint,
-        layout: { visibility: def.defaultOn ? "visible" : "none" },
-      });
-      if (def.outline) {
-        map.addLayer({
-          id: id + "-outline",
-          type: "line",
-          source: id,
-          paint: def.outline,
-          layout: { visibility: def.defaultOn ? "visible" : "none" },
-        });
+    if (def.layerType === "point") {
+      // ScatterplotLayer for transit stations
+      if (info.type === "geojson" && info.data) {
+        layers.push(new deck.GeoJsonLayer({
+          id: id + "-pt",
+          data: info.data,
+          visible,
+          pickable: true,
+          pointType: "circle",
+          getFillColor: def.getFillColor,
+          getPointRadius: def.getRadius || 60,
+          pointRadiusUnits: "meters",
+          pointRadiusMinPixels: 3,
+          pointRadiusMaxPixels: 12,
+          getLineColor: [255, 255, 255, 200],
+          lineWidthMinPixels: 1,
+          stroked: true,
+          autoHighlight: true,
+          highlightColor: [255, 255, 0, 128],
+        }));
       }
     } else {
-      map.addLayer({
-        id: id + "-pt",
-        type: def.layerType,
-        source: id,
-        paint: def.paint,
-        layout: { visibility: def.defaultOn ? "visible" : "none" },
-      });
+      // Polygon layers — prefer MVT if available
+      if (info.type === "vector") {
+        layers.push(new deck.MVTLayer({
+          id: id + "-fill",
+          data: info.url,
+          visible,
+          pickable: true,
+          getFillColor: def.getFillColor,
+          getLineColor: def.getLineColor || [0, 0, 0, 30],
+          lineWidthMinPixels: def.lineWidthMinPixels || 0.3,
+          autoHighlight: true,
+          highlightColor: [255, 255, 0, 80],
+          // Use pmtiles protocol loader if URL ends in .pmtiles
+          ...(info.url.endsWith(".pmtiles") ? { loaders: [pmtiles.PMTilesLoader] } : {}),
+        }));
+      } else if (info.data) {
+        layers.push(new deck.GeoJsonLayer({
+          id: id + "-fill",
+          data: info.data,
+          visible,
+          pickable: true,
+          getFillColor: def.getFillColor,
+          getLineColor: def.getLineColor || [0, 0, 0, 30],
+          lineWidthMinPixels: def.lineWidthMinPixels || 0.3,
+          stroked: true,
+          autoHighlight: true,
+          highlightColor: [255, 255, 0, 80],
+        }));
+      }
     }
-
-    // Pop-ups
-    const clickLayer = def.layerType === "fill" ? id + "-fill" : id + "-pt";
-    map.on("click", clickLayer, (e) => showPopup(e, id));
-    map.on("mouseenter", clickLayer, () => { map.getCanvas().style.cursor = "pointer"; });
-    map.on("mouseleave", clickLayer, () => { map.getCanvas().style.cursor = ""; });
-
-    console.log(`Layer loaded: ${id}`);
-  } catch (err) {
-    console.warn(`Could not load layer ${id}:`, err);
   }
+
+  deckgl.setProps({ layers });
 }
 
 // ---------------------------------------------------------------------------
 // Pop-ups
 // ---------------------------------------------------------------------------
-function showPopup(e, layerId) {
-  const props = e.features[0].properties;
+function showPopup(info) {
+  closePopup();
+
+  const props = info.object.properties || info.object;
+  const layerId = (info.layer.id || "").replace(/-fill$|-pt$|-outline$/, "");
   let html = '<div class="popup-title">';
 
   if (layerId === "transit") {
@@ -262,15 +349,32 @@ function showPopup(e, layerId) {
     html += `Zone ${zc}</div>`;
     if (props.zone_name) html += popupRow("Type", props.zone_name);
     if (props.proposed_zone) html += popupRow("Proposed", props.proposed_zone);
-    if (props.changed !== undefined) html += popupRow("Changed", props.changed ? "Yes" : "No");
+    if (props.changed !== undefined) html += popupRow("Changed", (props.changed === true || props.changed === "true") ? "Yes" : "No");
   } else {
     html += "Feature</div>";
   }
 
-  new maplibregl.Popup({ maxWidth: "300px" })
-    .setLngLat(e.lngLat)
-    .setHTML(html)
-    .addTo(map);
+  // Create popup element
+  const popup = document.createElement("div");
+  popup.className = "deck-popup";
+  popup.innerHTML = `
+    <button class="popup-close" aria-label="Close popup">&times;</button>
+    ${html}
+  `;
+  popup.style.left = info.x + "px";
+  popup.style.top = info.y + "px";
+
+  popup.querySelector(".popup-close").addEventListener("click", closePopup);
+
+  document.getElementById("map").appendChild(popup);
+  currentPopup = popup;
+}
+
+function closePopup() {
+  if (currentPopup) {
+    currentPopup.remove();
+    currentPopup = null;
+  }
 }
 
 function popupRow(label, value) {
@@ -285,18 +389,18 @@ function wireUI() {
   document.querySelectorAll(".layer-toggle input").forEach((cb) => {
     cb.addEventListener("change", () => {
       const layerId = cb.dataset.layer;
-      const vis = cb.checked ? "visible" : "none";
-      setLayerVisibility(layerId, vis);
+      layerVisible[layerId] = cb.checked;
+      rebuildLayers();
     });
   });
 
-  // Tour buttons
+  // Tour buttons → fly-to with smooth transition
   document.querySelectorAll(".tour-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const lng = parseFloat(btn.dataset.lng);
       const lat = parseFloat(btn.dataset.lat);
       const zoom = parseFloat(btn.dataset.zoom);
-      map.flyTo({ center: [lng, lat], zoom, duration: 2000 });
+      flyTo(lng, lat, zoom);
     });
   });
 
@@ -326,26 +430,42 @@ function wireUI() {
   const compareCheck = document.getElementById("compare-mode");
   if (compareCheck) {
     compareCheck.addEventListener("change", () => {
-      // Show both zoning + proposed_zoning when compare mode on
       if (compareCheck.checked) {
-        setLayerVisibility("zoning", "visible");
-        setLayerVisibility("proposed_zoning", "visible");
+        layerVisible["zoning"] = true;
+        layerVisible["proposed_zoning"] = true;
+        // Sync checkboxes
+        const z = document.querySelector('[data-layer="zoning"]');
+        const p = document.querySelector('[data-layer="proposed_zoning"]');
+        if (z) z.checked = true;
+        if (p) p.checked = true;
         document.getElementById("compare-container").style.display = "block";
       } else {
-        setLayerVisibility("proposed_zoning", "none");
+        layerVisible["proposed_zoning"] = false;
+        const p = document.querySelector('[data-layer="proposed_zoning"]');
+        if (p) p.checked = false;
         document.getElementById("compare-container").style.display = "none";
       }
+      rebuildLayers();
     });
   }
 }
 
-function setLayerVisibility(layerId, vis) {
-  const suffixes = ["-fill", "-outline", "-pt"];
-  for (const s of suffixes) {
-    if (map.getLayer(layerId + s)) {
-      map.setLayoutProperty(layerId + s, "visibility", vis);
-    }
-  }
+// ---------------------------------------------------------------------------
+// Fly-to animation
+// ---------------------------------------------------------------------------
+function flyTo(lng, lat, zoom, duration = 2000) {
+  closePopup();
+  deckgl.setProps({
+    initialViewState: {
+      longitude: lng,
+      latitude: lat,
+      zoom: zoom,
+      pitch: 0,
+      bearing: 0,
+      transitionDuration: duration,
+      transitionInterpolator: new deck.FlyToInterpolator(),
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -359,11 +479,26 @@ async function geocode(query) {
     const results = await resp.json();
     if (results.length > 0) {
       const { lon, lat, display_name } = results[0];
-      map.flyTo({ center: [parseFloat(lon), parseFloat(lat)], zoom: 16, duration: 1500 });
-      new maplibregl.Popup()
-        .setLngLat([parseFloat(lon), parseFloat(lat)])
-        .setHTML(`<div class="popup-title">${display_name}</div>`)
-        .addTo(map);
+      flyTo(parseFloat(lon), parseFloat(lat), 16, 1500);
+      // Show a temporary popup at the geocoded location after transition
+      setTimeout(() => {
+        // Create a synthetic info object to show popup at screen center
+        const mapEl = document.getElementById("map");
+        const cx = mapEl.clientWidth / 2;
+        const cy = mapEl.clientHeight / 2;
+        const popup = document.createElement("div");
+        popup.className = "deck-popup";
+        popup.innerHTML = `
+          <button class="popup-close" aria-label="Close popup">&times;</button>
+          <div class="popup-title">${display_name}</div>
+        `;
+        popup.style.left = cx + "px";
+        popup.style.top = cy + "px";
+        popup.querySelector(".popup-close").addEventListener("click", closePopup);
+        closePopup();
+        mapEl.appendChild(popup);
+        currentPopup = popup;
+      }, 1600);
     } else {
       alert("Address not found. Try a different query.");
     }
@@ -376,16 +511,30 @@ async function geocode(query) {
 // Keyboard navigation helpers (accessibility)
 // ---------------------------------------------------------------------------
 document.addEventListener("keydown", (e) => {
-  // Arrow keys pan the map when focused
-  if (document.activeElement === document.getElementById("map")) {
-    const PAN = 100;
+  if (document.activeElement === document.getElementById("map") ||
+      document.activeElement === document.body) {
+    const vs = deckgl.viewManager?.getViewState() ||
+               deckgl.props?.initialViewState || {};
+    const PAN_DELTA = 0.005;
     switch (e.key) {
-      case "ArrowUp":    map.panBy([0, -PAN]); e.preventDefault(); break;
-      case "ArrowDown":  map.panBy([0, PAN]);  e.preventDefault(); break;
-      case "ArrowLeft":  map.panBy([-PAN, 0]); e.preventDefault(); break;
-      case "ArrowRight": map.panBy([PAN, 0]);  e.preventDefault(); break;
-      case "+": case "=":  map.zoomIn();  e.preventDefault(); break;
-      case "-":            map.zoomOut(); e.preventDefault(); break;
+      case "ArrowUp":
+        flyTo(vs.longitude, vs.latitude + PAN_DELTA, vs.zoom, 200);
+        e.preventDefault(); break;
+      case "ArrowDown":
+        flyTo(vs.longitude, vs.latitude - PAN_DELTA, vs.zoom, 200);
+        e.preventDefault(); break;
+      case "ArrowLeft":
+        flyTo(vs.longitude - PAN_DELTA, vs.latitude, vs.zoom, 200);
+        e.preventDefault(); break;
+      case "ArrowRight":
+        flyTo(vs.longitude + PAN_DELTA, vs.latitude, vs.zoom, 200);
+        e.preventDefault(); break;
+      case "+": case "=":
+        flyTo(vs.longitude, vs.latitude, (vs.zoom || INITIAL_ZOOM) + 1, 300);
+        e.preventDefault(); break;
+      case "-":
+        flyTo(vs.longitude, vs.latitude, (vs.zoom || INITIAL_ZOOM) - 1, 300);
+        e.preventDefault(); break;
     }
   }
 });

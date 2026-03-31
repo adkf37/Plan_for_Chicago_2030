@@ -21,7 +21,7 @@ planning.
 | Directory | Purpose |
 |-----------|---------|
 | `src/` | Core data processing & analysis modules |
-| `viz/` | Visualisation scripts (Folium maps, matplotlib charts) |
+| `viz/` | Visualisation scripts (PyDeck maps, matplotlib charts) |
 | `data/` | Data files (see `data/reference/` for tracked CSVs) |
 | `maps/` | Generated HTML map files (gitignored) |
 | `reports/` | Generated reports & chart images (gitignored) |

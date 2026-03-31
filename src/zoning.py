@@ -477,6 +477,66 @@ def assign_proposed_density(
     return assigned
 
 
+# --- Geometry Reconstruction ---
+
+def _rebuild_parcel_geometries(parcels_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Rebuild point geometries from lat/lon columns when all geometry entries are null.
+
+    The Cook County Parcel Universe download (from the Socrata attribute
+    endpoint) has ``lat``/``lon`` string columns but no actual geometry.
+    This helper converts them to Point geometries and filters to Chicago proper.
+    """
+    null_count = parcels_gdf.geometry.isna().sum()
+    if null_count == 0:
+        return parcels_gdf
+
+    print(f"  Detected {null_count:,} null geometries — rebuilding from lat/lon columns...")
+
+    if "lat" not in parcels_gdf.columns or "lon" not in parcels_gdf.columns:
+        print("ERROR: No lat/lon columns found; cannot rebuild geometries")
+        return parcels_gdf
+
+    df = parcels_gdf.copy()
+
+    # Socrata stores coordinates as strings — cast to float
+    lat = pd.to_numeric(df["lat"], errors="coerce")
+    lon = pd.to_numeric(df["lon"], errors="coerce")
+
+    valid_mask = lat.notna() & lon.notna()
+    print(f"  Valid lat/lon: {valid_mask.sum():,} of {len(df):,}")
+
+    df = df[valid_mask].copy()
+    lat = lat[valid_mask]
+    lon = lon[valid_mask]
+
+    df["geometry"] = gpd.points_from_xy(lon, lat)
+    df = df.set_geometry("geometry")
+    df = df.set_crs("EPSG:4326")
+
+    # Filter to Chicago parcels — the parcel file covers all of Cook County;
+    # Chicago zoning polygons only cover Chicago, so suburban parcels would
+    # never match and would inflate the denominator for join-rate reporting.
+    if "chicago_community_area_num" in df.columns:
+        chicago_mask = df["chicago_community_area_num"].notna()
+        chicago_count = int(chicago_mask.sum())
+        print(f"  Filtering to Chicago parcels: {chicago_count:,} of {len(df):,} "
+              f"have community area assignment")
+        df = df[chicago_mask].copy()
+    else:
+        # Fallback: bounding box
+        valid_lat = pd.to_numeric(df["lat"], errors="coerce")
+        valid_lon = pd.to_numeric(df["lon"], errors="coerce")
+        bbox_mask = (
+            valid_lat.between(41.64, 42.02) & valid_lon.between(-87.94, -87.52)
+        )
+        print(f"  Filtering to Chicago bounding box: {bbox_mask.sum():,} parcels")
+        df = df[bbox_mask].copy()
+
+    print(f"  Rebuilt {len(df):,} Chicago parcels with valid Point geometries")
+    return df
+
+
 # --- Main Pipeline ---
 
 def run_zoning_analysis(
@@ -516,6 +576,11 @@ def run_zoning_analysis(
         return None, None
     parcels = gpd.read_file(parcels_path)
     print(f"  Loaded {len(parcels):,} parcels")
+
+    # Reconstruct geometries from lat/lon if the file has null geometries
+    # (Cook County attribute-only download has lat/lon strings, not geometry)
+    parcels = _rebuild_parcel_geometries(parcels)
+    print(f"  Using {len(parcels):,} parcels after geometry rebuild")
     
     if not zoning_path.exists():
         print(f"ERROR: Zoning file not found: {zoning_path}")

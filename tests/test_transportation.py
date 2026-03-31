@@ -296,4 +296,4 @@ def test_visualise_creates_html(sample_stations, tmp_path):
     visualise_transit_shed(stations=sample_stations, output_path=out)
     assert out.exists()
     html = out.read_text()
-    assert "leaflet" in html.lower() or "folium" in html.lower()
+    assert "pydeck" in html.lower() or "deck.gl" in html.lower()

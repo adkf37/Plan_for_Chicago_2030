@@ -55,6 +55,11 @@ def load_cta_stations(path: Path | None = None) -> gpd.GeoDataFrame | None:
         print(f"WARNING: CTA stations file not found – {path}")
         return None
     gdf = gpd.read_file(path)
+    # Deduplicate: the GeoJSON contains directional stop records (one per
+    # direction per station), not unique station locations.  map_id is the
+    # station-level grouping key (~145 unique values vs ~300 stop records).
+    if "map_id" in gdf.columns:
+        gdf = gdf.drop_duplicates(subset="map_id").reset_index(drop=True)
     if "station_name" not in gdf.columns:
         # try common alternatives
         for alt in ["STATION_NAME", "name", "NAME", "stop_name"]:
@@ -258,100 +263,59 @@ def compute_walk_score_proxy(
     max_intersection_density: float = 200,
 ) -> gpd.GeoDataFrame:
     """
-    Compute a 0-100 walkability proxy for each parcel using OSM data.
+    Compute a 0-100 walkability proxy for each parcel using CTA station proximity.
 
-    Components (equally weighted by default):
-    1. **Amenity richness** – count of POI nodes (amenity, shop tags) within
-       *amenity_radius_m* of the parcel centroid, capped at *max_amenity_count*.
-    2. **Intersection density** – node degree >= 3 within *intersection_radius_m*,
-       capped at *max_intersection_density*.
+    In Chicago's grid city, transit access is the dominant walkability driver.
+    Walkability score = 100 at the station door, 0 at >=2 km away, linear.
 
-    Falls back to 50 (neutral) if osmnx is unavailable.
+    Formula: ``walk_score = clip(100 * (1 - dist_m / 2000), 0, 100)``
+
+    If ``station_distance_m`` is already in *parcels* (computed by
+    ``compute_station_distances`` earlier in the pipeline), it is used
+    directly.  Otherwise, distances are computed on-the-fly from the
+    CTA stations GeoJSON — no external downloads.
+
+    NOTE: The previous implementation called ``osmnx.features_from_bbox()``
+    and ``osmnx.graph_from_bbox()`` to download live OSM data.  This
+    violated the project no-download constraint and silently fell back to
+    walk_score_proxy=50 for every parcel when osmnx >= 1.9 changed the bbox
+    argument order from (N,S,E,W) to (W,S,E,N).  The osmnx code is removed.
     """
     result = parcels.copy()
 
-    try:
-        import osmnx as ox  # type: ignore[import-untyped]
-    except ImportError:
-        print("WARNING: osmnx not installed – assigning neutral walk_score_proxy = 50")
-        result["walk_score_proxy"] = 50.0
-        return result
-
-    # Determine bounding box
-    if bbox is None:
-        bounds = result.total_bounds  # [minx, miny, maxx, maxy]
-        # Pad bounding box by ~1 km so edge parcels have full context
-        pad = 0.01  # ~1 km at Chicago latitude
-        bbox_tuple = (bounds[3] + pad, bounds[1] - pad,
-                      bounds[2] + pad, bounds[0] - pad)  # N, S, E, W
+    # --- Use pre-computed distances if available --------------------------
+    if "station_distance_m" in result.columns:
+        dist_m = result["station_distance_m"].fillna(2000.0)
     else:
-        pad = 0.01
-        bbox_tuple = (
-            bbox["max_lat"] + pad, bbox["min_lat"] - pad,
-            bbox["max_lon"] + pad, bbox["min_lon"] - pad,
-        )
+        # Compute from CTA stations GeoJSON (all local data, no downloads)
+        cta = load_cta_stations()
+        if cta is None or cta.empty:
+            print("WARNING: CTA stations unavailable – assigning neutral walk_score_proxy = 50")
+            result["walk_score_proxy"] = 50.0
+            return result
 
-    # --- 3a. Amenity count ------------------------------------------------
-    try:
-        print("Downloading OSM amenity nodes …")
-        amenities = ox.features_from_bbox(
-            bbox=bbox_tuple,
-            tags={"amenity": True, "shop": True},
-        )
-        amenity_points = amenities.copy()
-        amenity_points["geometry"] = amenity_points.geometry.centroid
-        amenity_proj = amenity_points.to_crs(_IL_CRS)
-    except Exception as e:
-        print(f"WARNING: Could not fetch OSM amenities: {e}")
-        amenity_proj = None
+        parcels_proj = result.to_crs(_IL_CRS)
+        cta_proj = cta.to_crs(_IL_CRS)
+        centroids = parcels_proj.geometry.centroid
 
-    # --- 3b. Intersection density -----------------------------------------
-    try:
-        print("Downloading OSM walk network …")
-        G = ox.graph_from_bbox(bbox=bbox_tuple, network_type="walk")
-        nodes_gdf = ox.graph_to_gdfs(G, edges=False)
-        # degree >= 3 -> "real" intersection (not dead-ends / bends)
-        node_degree = dict(G.degree())
-        intersection_nodes = nodes_gdf[
-            nodes_gdf.index.map(lambda n: node_degree.get(n, 0) >= 3)
-        ]
-        intersection_proj = intersection_nodes.to_crs(_IL_CRS)
-    except Exception as e:
-        print(f"WARNING: Could not fetch OSM walk network: {e}")
-        intersection_proj = None
+        stn_points = np.column_stack([
+            cta_proj.geometry.x.values,
+            cta_proj.geometry.y.values,
+        ])
+        cx = centroids.x.values
+        cy = centroids.y.values
 
-    # --- 3c. Score each parcel --------------------------------------------
-    parcels_proj = result.to_crs(_IL_CRS)
-    centroids = parcels_proj.geometry.centroid
+        dist_ft = np.empty(len(cx))
+        for i in range(len(cx)):
+            dists = np.sqrt((stn_points[:, 0] - cx[i]) ** 2 +
+                            (stn_points[:, 1] - cy[i]) ** 2)
+            dist_ft[i] = dists.min()
 
-    amenity_radius_ft = amenity_radius_m * _FEET_PER_METRE
-    intersection_radius_ft = intersection_radius_m * _FEET_PER_METRE
+        dist_m = pd.Series(dist_ft / _FEET_PER_METRE, index=result.index)
 
-    amenity_scores = np.full(len(centroids), 0.5)  # default neutral
-    intersection_scores = np.full(len(centroids), 0.5)
-
-    if amenity_proj is not None and not amenity_proj.empty:
-        from shapely.strtree import STRtree
-        amenity_tree = STRtree(amenity_proj.geometry.values)
-        print("Computing amenity counts per parcel …")
-        for i, centroid in enumerate(centroids):
-            nearby = amenity_tree.query(centroid.buffer(amenity_radius_ft))
-            count = len(nearby)
-            amenity_scores[i] = min(count / max_amenity_count, 1.0)
-
-    if intersection_proj is not None and not intersection_proj.empty:
-        from shapely.strtree import STRtree
-        int_tree = STRtree(intersection_proj.geometry.values)
-        print("Computing intersection density per parcel …")
-        for i, centroid in enumerate(centroids):
-            nearby = int_tree.query(centroid.buffer(intersection_radius_ft))
-            count = len(nearby)
-            intersection_scores[i] = min(count / max_intersection_density, 1.0)
-
-    # Composite walk score: average of two components, scaled 0-100
-    result["walk_score_proxy"] = np.round(
-        (amenity_scores * 0.5 + intersection_scores * 0.5) * 100, 1
-    )
+    # --- Score: 100 at station, 0 at >=2 km ------------------------------
+    walk_scores = (100.0 * (1.0 - dist_m / 2000.0)).clip(lower=0.0, upper=100.0)
+    result["walk_score_proxy"] = np.round(walk_scores, 1)
 
     print(f"Walk score proxy stats: "
           f"min={result['walk_score_proxy'].min():.0f}, "
@@ -524,7 +488,7 @@ def export_transit_scores(
 
 
 # ---------------------------------------------------------------------------
-# 7. Transit shed visualisation (Folium)
+# 7. Transit shed visualisation (PyDeck)
 # ---------------------------------------------------------------------------
 
 def visualise_transit_shed(
@@ -533,7 +497,7 @@ def visualise_transit_shed(
     rings_m: tuple[float, ...] = (400, 800),
 ) -> Path:
     """
-    Generate a Folium HTML map showing concentric buffer rings around
+    Generate a PyDeck HTML map showing concentric buffer rings around
     each L / Metra station.
 
     Parameters
@@ -545,7 +509,10 @@ def visualise_transit_shed(
     rings_m : tuple of float
         Buffer radii in metres (default 400 m and 800 m).
     """
-    import folium  # type: ignore[import-untyped]
+    from src.pydeck_utils import (
+        create_deck, save_map, geojson_fill_layer, scatterplot_layer,
+        rgba_column, legend_html,
+    )
 
     output_path = output_path or TRANSIT_SHED_MAP
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -553,45 +520,71 @@ def visualise_transit_shed(
     if stations is None:
         stations = combine_stations(include_proposed=True)
 
-    # Chicago centre
-    m = folium.Map(location=[41.8781, -87.6298], zoom_start=11,
-                   tiles="CartoDB positron")
-
-    # Project for buffering then reproject back to 4326 for Folium
+    # Project for buffering then reproject back to 4326 for display
     stations_proj = stations.to_crs(_IL_CRS)
 
-    ring_colours = ["#ff000060", "#ffa50040", "#ffff0030"]  # inner -> outer
+    ring_colours = [
+        [255, 0, 0, 60],     # inner (red, low alpha)
+        [255, 165, 0, 40],   # middle (orange)
+        [255, 255, 0, 30],   # outer (yellow)
+    ]
 
+    layers = []
     for idx, radius_m in enumerate(sorted(rings_m)):
         colour = ring_colours[idx % len(ring_colours)]
         radius_ft = radius_m * _FEET_PER_METRE
         buffers = stations_proj.geometry.buffer(radius_ft)
         buf_gdf = gpd.GeoDataFrame(geometry=buffers, crs=_IL_CRS).to_crs("EPSG:4326")
+        buf_gdf["rgba"] = [colour] * len(buf_gdf)
 
-        folium.GeoJson(
-            buf_gdf.__geo_interface__,
-            name=f"{radius_m} m ring",
-            style_function=lambda _feat, c=colour: {
-                "fillColor": c[:7],
-                "color": c[:7],
-                "weight": 0.5,
-                "fillOpacity": 0.25,
-            },
-        ).add_to(m)
+        layers.append(geojson_fill_layer(
+            f"ring-{radius_m}m",
+            buf_gdf,
+            get_fill_color="rgba",
+            get_line_color=colour[:3] + [80],
+            line_width_min_pixels=0.5,
+            pickable=False,
+        ))
 
     # Station markers
-    type_colours = {"CTA_L": "blue", "Metra": "green", "Proposed": "red"}
-    for _, row in stations.iterrows():
-        folium.CircleMarker(
-            location=[row.geometry.y, row.geometry.x],
-            radius=4,
-            color=type_colours.get(row["station_type"], "gray"),
-            fill=True, fill_opacity=0.8,
-            popup=f"{row['station_name']} ({row['station_type']})",
-        ).add_to(m)
+    type_colours = {
+        "CTA_L": [0, 0, 255, 200],
+        "Metra": [0, 128, 0, 200],
+        "Proposed": [255, 0, 0, 200],
+    }
 
-    folium.LayerControl().add_to(m)
-    m.save(str(output_path))
+    stations = stations.copy()
+    stations["longitude"] = stations.geometry.x
+    stations["latitude"] = stations.geometry.y
+    stations["rgba"] = stations["station_type"].map(
+        lambda t: type_colours.get(t, [128, 128, 128, 160])
+    )
+
+    layers.append(scatterplot_layer(
+        "stations",
+        stations,
+        get_position="[longitude, latitude]",
+        get_fill_color="rgba",
+        get_radius=80,
+        radius_min_pixels=3,
+        radius_max_pixels=10,
+    ))
+
+    legend_desc = legend_html(
+        "Transit Shed",
+        [(f"rgba(255,0,0,0.3)", f"{sorted(rings_m)[0]}m ring")]
+        + ([(f"rgba(255,165,0,0.2)", f"{sorted(rings_m)[1]}m ring")] if len(rings_m) > 1 else [])
+        + [("#0000ff", "CTA L"), ("#008000", "Metra"), ("#ff0000", "Proposed")],
+    )
+
+    deck = create_deck(
+        layers,
+        center=(41.8781, -87.6298),
+        zoom=11,
+        tooltip_html="<b>{station_name}</b> ({station_type})",
+        description=legend_desc,
+    )
+    save_map(deck, output_path)
     print(f"Transit shed map saved -> {output_path}")
     return output_path
 

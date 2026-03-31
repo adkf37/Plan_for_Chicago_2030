@@ -1,8 +1,8 @@
 """
 Visualize Chicago Zoning Map
 =============================
-Creates an interactive city-wide Folium zoning map with SimCity 2000-inspired
-color scheme, opacity-encoded density, and rich tooltips/popups.
+Creates an interactive city-wide PyDeck zoning map with SimCity 2000-inspired
+color scheme, opacity-encoded density, and rich tooltips.
 
 Usage:
     python -m viz.visualize_zoning
@@ -10,12 +10,14 @@ Usage:
 
 import geopandas as gpd
 import pandas as pd
-import folium
-from folium import GeoJson
 
 from src.config import (
     CHICAGO_ZONING_GEOJSON, ZONING_CODES_CSV, ZONING_MAP,
     ZONE_TYPE_COLORS, ZONE_TYPE_NAMES, ensure_dirs,
+)
+from src.pydeck_utils import (
+    create_deck, save_map, geojson_fill_layer, rgba_column,
+    legend_html, hex_to_rgba,
 )
 
 
@@ -51,64 +53,58 @@ def main():
     zoning_gdf["far"] = zoning_gdf["ZONE_CLASS"].apply(lambda x: get_zone_info(x)["far"])
 
     # Create map
-    chicago_center = [zoning_gdf.geometry.centroid.y.mean(), zoning_gdf.geometry.centroid.x.mean()]
-    m = folium.Map(location=chicago_center, zoom_start=11, tiles="CartoDB positron")
+    chicago_center = (zoning_gdf.geometry.centroid.y.mean(), zoning_gdf.geometry.centroid.x.mean())
 
-    def style_function(feature):
-        zone_type = feature["properties"].get("ZONE_TYPE", 0)
-        zone_class = feature["properties"].get("ZONE_CLASS", "")
-        color = ZONE_TYPE_COLORS.get(zone_type, "#808080")
-        opacity = 0.35
-        if "-" in str(zone_class):
+    def _color(row):
+        zone_type = row.get("ZONE_TYPE", 0)
+        zone_class = str(row.get("ZONE_CLASS", ""))
+        base = hex_to_rgba(ZONE_TYPE_COLORS.get(zone_type, "#808080"), 90)
+
+        # Opacity-encode density from zone class suffix
+        if "-" in zone_class:
             try:
-                parts = str(zone_class).split("-")
+                parts = zone_class.split("-")
                 if len(parts) > 1 and parts[1].replace(".", "").isdigit():
                     density = float(parts[1])
-                    opacity = min(0.15 + (density / 20.0), 0.65)
+                    alpha = int(min(40 + (density / 20.0) * 255, 165))
+                    base[3] = alpha
             except (ValueError, IndexError):
                 pass
-        return {"fillColor": color, "color": "#000000", "weight": 0.5, "fillOpacity": opacity}
+        return base
 
-    def highlight_function(feature):
-        return {"fillColor": "#ffff00", "color": "#000000", "weight": 2, "fillOpacity": 0.7}
+    zoning_gdf = rgba_column(zoning_gdf, _color)
 
-    GeoJson(
+    layer = geojson_fill_layer(
+        "chicago-zoning",
         zoning_gdf,
-        name="Chicago Zoning",
-        style_function=style_function,
-        highlight_function=highlight_function,
-        tooltip=folium.GeoJsonTooltip(
-            fields=["ZONE_CLASS", "zone_name"],
-            aliases=["Zone:", "District:"],
-        ),
-        popup=folium.GeoJsonPopup(
-            fields=["ZONE_CLASS", "zone_name", "zone_description", "far"],
-            aliases=["Zone Code:", "District:", "Description:", "FAR:"],
-        ),
-    ).add_to(m)
+        get_fill_color="rgba",
+        get_line_color=[0, 0, 0, 80],
+        line_width_min_pixels=0.5,
+        auto_highlight=True,
+    )
 
     # Legend
-    legend_html = f'''
-    <div style="position: fixed; bottom: 50px; right: 50px; width: 200px;
-    border:2px solid grey; z-index:9999; font-size:12px;
-    background-color: white; opacity: 0.95; padding: 10px;">
-    <p style="font-weight: bold;">Chicago Zoning Types</p>
-    <p><i class="fa fa-square" style="color:{ZONE_TYPE_COLORS[4]}"></i> Residential</p>
-    <p><i class="fa fa-square" style="color:{ZONE_TYPE_COLORS[1]}"></i> Business/Commercial</p>
-    <p><i class="fa fa-square" style="color:{ZONE_TYPE_COLORS[3]}"></i> Manufacturing</p>
-    <p><i class="fa fa-square" style="color:{ZONE_TYPE_COLORS[5]}"></i> Planned Development</p>
-    <p><i class="fa fa-square" style="color:{ZONE_TYPE_COLORS[12]}"></i> Parks</p>
-    <p><i class="fa fa-square" style="color:{ZONE_TYPE_COLORS[11]}"></i> Transportation</p>
-    <hr>
-    <p style="font-size: 10px; font-style: italic;">
-    Opacity = density (FAR)<br>Click for details</p>
-    </div>
-    '''
-    m.get_root().html.add_child(folium.Element(legend_html))
-    folium.LayerControl().add_to(m)
+    legend_desc = legend_html(
+        "Chicago Zoning Types",
+        [
+            (ZONE_TYPE_COLORS[4], "Residential"),
+            (ZONE_TYPE_COLORS[1], "Business/Commercial"),
+            (ZONE_TYPE_COLORS[3], "Manufacturing"),
+            (ZONE_TYPE_COLORS[5], "Planned Development"),
+            (ZONE_TYPE_COLORS[12], "Parks"),
+            (ZONE_TYPE_COLORS[11], "Transportation"),
+        ],
+        footer="Opacity = density (FAR)<br>Click for details",
+    )
 
-    m.save(str(ZONING_MAP))
-    print(f"\nSaved: {ZONING_MAP}")
+    deck = create_deck(
+        [layer],
+        center=chicago_center,
+        zoom=11,
+        tooltip_html="<b>{ZONE_CLASS}</b><br>{zone_name}<br>{zone_description}<br>FAR: {far}",
+        description=legend_desc,
+    )
+    save_map(deck, ZONING_MAP)
 
     # Summary stats
     print(f"\n=== Zoning Summary ({len(zoning_gdf):,} parcels) ===")

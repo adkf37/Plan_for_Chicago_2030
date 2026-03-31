@@ -9,7 +9,7 @@ A comprehensive strategy to redesign Chicago’s land use and transportation, de
 ## 1. Interactive Map Features & Functionality
 
 - **Open-Source Mapping Platform**  
-  - MapLibre GL JS or Leaflet for interactive layering and toggles.
+  - Deck.gl for interactive layering and toggles, PMTiles for vector tile serving.
 - **Base Map & Layers**  
   - OpenStreetMap basemap.  
   - Overlay layers for current/proposed zoning, transit, parcels, and property values.
@@ -84,7 +84,7 @@ A comprehensive strategy to redesign Chicago’s land use and transportation, de
   - Embed map with deep links to zoom locations, sync narrative sections with map state.
 - **Technical Implementation & Hosting**  
   - Static site (HTML/CSS/JS) on GitHub Pages or Netlify.  
-  - OSM tiles, self‑hosted vector tiles, MapLibre GL JS.
+  - OSM tiles, PMTiles vector tiles, Deck.gl.
 - **Design & UX**  
   - Responsive, accessible, use of call-outs, images, infographics.
 - **Policy Justifications & Trade-Offs**  

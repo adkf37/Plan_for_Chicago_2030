@@ -20,6 +20,7 @@ html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; color
 #sidebar      { width: var(--sidebar); background: #fff; border-right: 1px solid #ddd;
                 display: flex; flex-direction: column; z-index: 10; transition: transform .3s; }
 #map          { flex: 1; position: relative; }
+#map canvas   { outline: none; }
 
 /* ---- Sidebar ---- */
 .sidebar-header { background: var(--brand); color: #fff; padding: 1rem; text-align: center; }
@@ -58,9 +59,16 @@ html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; color
 #geocoder-btn   { padding: .4rem .6rem; background: var(--brand); color: #fff; border: none;
                   border-radius: var(--radius); cursor: pointer; font-size: .85rem; }
 
-/* ---- Popup ---- */
-.maplibregl-popup-content { border-radius: var(--radius); padding: .8rem 1rem; max-width: 300px;
-                            font-size: .82rem; line-height: 1.5; }
+/* ---- Popup (Deck.gl) ---- */
+.deck-popup { position: absolute; z-index: 15; background: #fff;
+              border-radius: var(--radius); padding: .8rem 1rem; max-width: 300px;
+              font-size: .82rem; line-height: 1.5;
+              box-shadow: 0 3px 14px rgba(0,0,0,.2);
+              transform: translate(-50%, -100%); margin-top: -12px;
+              pointer-events: auto; }
+.popup-close { position: absolute; top: 4px; right: 8px; background: none; border: none;
+               font-size: 1.1rem; cursor: pointer; color: var(--muted); line-height: 1; padding: 0; }
+.popup-close:hover { color: var(--text); }
 .popup-title { font-weight: 700; margin-bottom: .3rem; color: var(--brand); }
 .popup-row   { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: .2rem 0; }
 .popup-label { color: var(--muted); }

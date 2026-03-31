@@ -1,0 +1,8 @@
+{
+  "version": "1.0",
+  "policy": {
+    "universe": "The Wire",
+    "allowlist": ["The Wire"],
+    "capacity": 20
+  }
+}
