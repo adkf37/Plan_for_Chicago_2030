@@ -110,6 +110,28 @@ class TestSpatialJoin:
         result = spatial_join_parcels_to_zoning(None, None)
         assert result is None
 
+    def test_spatial_join_preserves_canonical_zone_columns_on_name_collision(self, sample_zoning):
+        """If parcel data already has zone_class/zone_type, joined zoning values should still populate canonical columns."""
+        from src.zoning import spatial_join_parcels_to_zoning
+
+        parcels = gpd.GeoDataFrame(
+            {
+                "pin": ["001"],
+                "zone_class": ["OLD"],
+                "zone_type": [99],
+            },
+            geometry=[Point(-87.630, 41.880)],
+            crs="EPSG:4326",
+        )
+
+        result = spatial_join_parcels_to_zoning(parcels, sample_zoning)
+
+        assert "zone_class" in result.columns
+        assert "zone_type" in result.columns
+        # Expect joined zoning values (RS-3 / 4), not original parcel placeholders.
+        assert result.loc[0, "zone_class"] == "RS-3"
+        assert result.loc[0, "zone_type"] == 4
+
 
 class TestZoneCategory:
     """Tests for add_zone_category function."""
