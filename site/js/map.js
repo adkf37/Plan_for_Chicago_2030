@@ -25,6 +25,42 @@ function hexToRGBA(hex, alpha = 255) {
           parseInt(hex.slice(4, 6), 16), alpha];
 }
 
+// Chicago zoning color scheme — mirrors secondcityzoning.org / Chicago Zoning Map
+// Colors keyed by zone_class prefix (RS, RT, RM, B, C, M, DX, PD, POS, T …)
+function zoningCategory(zoneClass) {
+  if (!zoneClass) return 'other';
+  const c = zoneClass.toUpperCase();
+  if (c.startsWith('RS'))                                                   return 'RS';
+  if (c.startsWith('RTA') || c.startsWith('RT'))                           return 'RT';
+  if (c.startsWith('RM')  || c.startsWith('RB'))                           return 'RM';
+  if (c.startsWith('DX')  || c.startsWith('DC') ||
+      c.startsWith('DR')  || c.startsWith('DS'))                           return 'D';
+  if (c.startsWith('PMD'))                                                  return 'PMD';
+  if (c.startsWith('PD'))                                                   return 'PD';
+  if (c.startsWith('POS'))                                                  return 'POS';
+  if (c.startsWith('B'))                                                    return 'B';
+  if (c.startsWith('C'))                                                    return 'C';
+  if (c.startsWith('M'))                                                    return 'M';
+  if (c.startsWith('T'))                                                    return 'T';
+  return 'other';
+}
+
+// RGBA values (R, G, B, A) — alpha 145 gives good polygon fill at default opacity
+const ZONING_COLORS = {
+  RS:    [253, 219,  72, 145],  // single-family: bright yellow
+  RT:    [251, 169,  56, 145],  // two-flat / townhouse: amber
+  RM:    [240, 126,  36, 145],  // multi-unit residential: deep orange
+  D:     [155,  89, 182, 145],  // downtown mixed (DX/DC/DR/DS): purple
+  B:     [232,  87,  87, 145],  // neighborhood business: coral
+  C:     [192,  57,  43, 145],  // commercial: deep red
+  M:     [127, 110, 170, 145],  // industrial / manufacturing: muted purple
+  PMD:   [108,  52, 131, 145],  // planned manufacturing district: dark purple
+  PD:    [180, 175, 210, 145],  // planned development: lavender
+  POS:   [ 39, 174,  96, 145],  // parks / open space: green
+  T:     [149, 165, 166, 130],  // transportation: gray
+  other: [150, 150, 150, 100],  // fallback
+};
+
 // TOD score → YlGnBu 5-stop color ramp
 const TOD_STOPS = [
   { v: 0,   c: [255, 255, 204] },
@@ -66,14 +102,15 @@ const LAYER_DEFS = {
     file: "zoning.geojson",
     label: "Current Zoning",
     defaultOn: true,
-    swatch: "#00ff00",
+    swatch: "#fddb48",
     layerType: "polygon",
     getFillColor: (d) => {
-      const c = (d.properties || d).zone_color || "#808080";
-      return hexToRGBA(c, 115);
+      const zc = (d.properties || d).zone_class;
+      const cat = zoningCategory(zc);
+      return ZONING_COLORS[cat] || ZONING_COLORS.other;
     },
-    getLineColor: [0, 0, 0, 50],
-    lineWidthMinPixels: 0.3,
+    getLineColor: [30, 30, 30, 55],
+    lineWidthMinPixels: 0.4,
   },
   proposed_zoning: {
     file: "proposed_zoning.geojson",
@@ -106,7 +143,7 @@ const LAYER_DEFS = {
   },
   parcels: {
     file: "parcels.geojson",
-    label: "Parcel Values / TOD",
+    label: "TOD Opportunity Scores",
     defaultOn: false,
     swatch: "#41b6c4",
     layerType: "point",
@@ -115,6 +152,35 @@ const LAYER_DEFS = {
       return todScoreColor(score, 180);
     },
     getRadius: 40,
+  },
+  transit_lines: {
+    file: "transit_lines.geojson",
+    label: "Transit Lines",
+    defaultOn: true,
+    swatch: "#c60c30",
+    layerType: "line",
+    getColor: (d) => {
+      const hex = (d.properties || d).colour || "#888888";
+      const type = (d.properties || d).line_type || "";
+      // Metra lines slightly more transparent
+      const alpha = type === "Metra" ? 180 : 230;
+      return hexToRGBA(hex, alpha);
+    },
+    getWidth: (d) => {
+      const type = (d.properties || d).line_type || "";
+      return type === "Metra" ? 40 : 55;
+    },
+    widthUnits: "meters",
+    widthMinPixels: 1.5,
+  },
+  metra_stations: {
+    file: "metra_stations.geojson",
+    label: "Metra Stations",
+    defaultOn: true,
+    swatch: "#2d6b37",
+    layerType: "point",
+    getFillColor: (d) => hexToRGBA((d.properties || d).colour || "#2d6b37", 220),
+    getRadius: 120,
   },
 };
 
@@ -265,7 +331,37 @@ function rebuildLayers() {
     if (!info) continue;
     const visible = layerVisible[id];
 
-    if (def.layerType === "point") {
+    if (def.layerType === "line") {
+      // PathLayer for transit lines (LineString / MultiLineString)
+      if (info.type === "geojson" && info.data) {
+        const pathFeatures = [];
+        for (const feat of info.data.features) {
+          const geomType = feat.geometry && feat.geometry.type;
+          if (geomType === "LineString") {
+            pathFeatures.push({ path: feat.geometry.coordinates, properties: feat.properties });
+          } else if (geomType === "MultiLineString") {
+            for (const seg of feat.geometry.coordinates) {
+              pathFeatures.push({ path: seg, properties: feat.properties });
+            }
+          }
+        }
+        layers.push(new deck.PathLayer({
+          id: id + "-lines",
+          data: pathFeatures,
+          visible,
+          pickable: true,
+          getPath: d => d.path,
+          getColor: d => def.getColor({ properties: d.properties }),
+          getWidth: d => def.getWidth({ properties: d.properties }),
+          widthUnits: def.widthUnits || "meters",
+          widthMinPixels: def.widthMinPixels || 2,
+          capRounded: true,
+          jointRounded: true,
+          autoHighlight: true,
+          highlightColor: [255, 255, 100, 200],
+        }));
+      }
+    } else if (def.layerType === "point") {
       // ScatterplotLayer for transit stations
       if (info.type === "geojson" && info.data) {
         layers.push(new deck.GeoJsonLayer({
@@ -329,7 +425,7 @@ function showPopup(info) {
   closePopup();
 
   const props = info.object.properties || info.object;
-  const layerId = (info.layer.id || "").replace(/-fill$|-pt$|-outline$/, "");
+  const layerId = (info.layer.id || "").replace(/-fill$|-pt$|-outline$|-lines$/, "");
   let html = '<div class="popup-title">';
 
   if (layerId === "transit") {
@@ -344,6 +440,12 @@ function showPopup(info) {
     if (props.moderate_uplift_pct) html += popupRow("Uplift", (props.moderate_uplift_pct * 100).toFixed(1) + "%");
     if (props.tod_score) html += popupRow("TOD Score", Number(props.tod_score).toFixed(0) + " / 100");
     if (props.transit_tier) html += popupRow("Transit Tier", props.transit_tier);
+  } else if (layerId === "transit_lines") {
+    html += `${props.line_name || "Transit Line"}</div>`;
+    html += popupRow("Type", props.line_type);
+  } else if (layerId === "metra_stations") {
+    html += `${props.station_name || "Metra Station"}</div>`;
+    html += popupRow("Line", props.line_abbrev);
   } else if (layerId === "zoning" || layerId === "proposed_zoning") {
     const zc = props.ZONE_CLASS || props.zone_class || "—";
     html += `Zone ${zc}</div>`;
@@ -385,11 +487,12 @@ function popupRow(label, value) {
 // UI wiring
 // ---------------------------------------------------------------------------
 function wireUI() {
-  // Layer toggles
+  // Layer toggles — data-layers="a,b" groups multiple layers under one checkbox
   document.querySelectorAll(".layer-toggle input").forEach((cb) => {
     cb.addEventListener("change", () => {
-      const layerId = cb.dataset.layer;
-      layerVisible[layerId] = cb.checked;
+      const ids = (cb.dataset.layers || cb.dataset.layer || "")
+        .split(",").map(s => s.trim()).filter(Boolean);
+      ids.forEach(id => { layerVisible[id] = cb.checked; });
       rebuildLayers();
     });
   });
@@ -426,28 +529,6 @@ function wireUI() {
     hcBtn.addEventListener("click", () => document.body.classList.toggle("high-contrast"));
   }
 
-  // Before/after comparison toggle
-  const compareCheck = document.getElementById("compare-mode");
-  if (compareCheck) {
-    compareCheck.addEventListener("change", () => {
-      if (compareCheck.checked) {
-        layerVisible["zoning"] = true;
-        layerVisible["proposed_zoning"] = true;
-        // Sync checkboxes
-        const z = document.querySelector('[data-layer="zoning"]');
-        const p = document.querySelector('[data-layer="proposed_zoning"]');
-        if (z) z.checked = true;
-        if (p) p.checked = true;
-        document.getElementById("compare-container").style.display = "block";
-      } else {
-        layerVisible["proposed_zoning"] = false;
-        const p = document.querySelector('[data-layer="proposed_zoning"]');
-        if (p) p.checked = false;
-        document.getElementById("compare-container").style.display = "none";
-      }
-      rebuildLayers();
-    });
-  }
 }
 
 // ---------------------------------------------------------------------------

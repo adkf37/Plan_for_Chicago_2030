@@ -14,5 +14,13 @@
   "parcels": {
     "file": "parcels.geojson",
     "sourceType": "geojson"
+  },
+  "transit_lines": {
+    "file": "transit_lines.geojson",
+    "sourceType": "geojson"
+  },
+  "metra_stations": {
+    "file": "metra_stations.geojson",
+    "sourceType": "geojson"
   }
 }

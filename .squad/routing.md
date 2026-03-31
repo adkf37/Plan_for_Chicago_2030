@@ -8,6 +8,7 @@ How to decide who handles what.
 |-----------|----------|---------|
 | Architecture, scope, decisions | Freamon | What to build next, trade-offs, code review |
 | Spatial analysis, maps, GeoJSON | McNulty | GeoPandas, Folium, CRS, transit sheds, zoning geometry |
+| Website design, UI, frontend HTML/CSS/JS | Stringer | site/index.html, site/map.html, site/css/, data storytelling, map UX |
 | Data pipelines, processing, modeling | Bunk | Pandas, pipeline.py, property value, scenario comparison |
 | Tests, data validation | Greggs | pytest, test coverage, data completeness |
 | Code review | Freamon | Review PRs, check quality, suggest improvements |

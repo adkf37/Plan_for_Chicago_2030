@@ -16,6 +16,7 @@
 | McNulty | Geo Developer | [charter](.squad/agents/mcnulty/charter.md) | active |
 | Bunk | Data Engineer | [charter](.squad/agents/bunk/charter.md) | active |
 | Greggs | Tester | [charter](.squad/agents/greggs/charter.md) | active |
+| Stringer | UI Designer | [charter](.squad/agents/stringer/charter.md) | active |
 | Scribe | Session Logger | [charter](.squad/agents/scribe/charter.md) | active |
 | Ralph | Work Monitor | [charter](.squad/agents/ralph/charter.md) | active |
 
