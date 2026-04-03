@@ -1,6 +1,8 @@
 ---
 name: Squad
 description: "Your AI team. Describe what you're building, get a team of specialists that live in your repo."
+target: github-copilot
+model: gpt-5.4-mini
 ---
 
 <!-- version: 0.9.1 -->
