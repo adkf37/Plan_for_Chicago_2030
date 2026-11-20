@@ -1,6 +1,6 @@
 # Epic 08 — Public Website & Policy Brief
 
-> **Status:** Not Started  
+> **Status:** In Progress (landing narrative and separate map page implemented)
 > **Priority:** P2  
 > **Owner:** —  
 
@@ -21,15 +21,18 @@ arguments, and case-study appendix.
 
 ## Tasks
 
-- [x] Create `site/index.html` landing page skeleton
-- [ ] Add responsive CSS framework (Pico CSS or Tailwind)
-- [ ] Write Introduction narrative section
-- [ ] Embed interactive map (iframe or Deck.gl inline)
+- [x] Create landing page with introduction, findings, analysis and methodology sections
+- [x] Add responsive custom CSS; a framework is optional, not an acceptance requirement
+- [x] Write introduction / case-for-upzoning narrative
+- [ ] Audit headline figures, causal language and citations against reproducible outputs
+- [x] Link landing page to `site/map.html`
+- [ ] Embed map if desired; current landing page launches a separate map
 - [ ] Create section pages (land-use.html, transport.html, housing.html, …)
 - [ ] Build infographics: housing type illustrations, before/after renderings
 - [ ] Write case-study summaries with citations
 - [ ] Add interactive calculator: "What would upzoning mean for your block?"
-- [ ] Deploy to GitHub Pages with custom domain
+- [ ] Configure and verify public deployment; no Pages deploy workflow was found
+- [ ] Resolve `../maps/` links for a site/-only deployment and include generated data assets
 - [ ] Add Open Graph / social sharing metadata
 - [ ] Add analytics (privacy-friendly: Plausible or GoatCounter)
 
@@ -42,3 +45,7 @@ arguments, and case-study appendix.
 ## Dependencies
 - Epic 06 (interactive map)
 - Epic 07 (scenario comparison)
+
+## Audit - 2026-11-19
+
+Status reflects checked-in implementation; unchecked acceptance criteria still require evidence. See [current priorities](README.md) and [Soldier Field review](../docs/soldier_field_review.md).

@@ -96,3 +96,6 @@ cache/
 .squad/sessions/
 # Squad: SubSquad activation file (local to this machine)
 .squad-workstream
+
+# Small, sourced Soldier Field analysis boundaries (not bulk downloads)
+!data/reference/soldier_field/*.geojson

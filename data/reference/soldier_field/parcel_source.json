@@ -1,0 +1,9 @@
+{
+  "url": "https://datacatalog.cookcountyil.gov/resource/nj4t-kc8j.json",
+  "where": "year=2023 AND lat between 41.8524 and 41.8674 AND lon between -87.6308 and -87.6219",
+  "order": "pin",
+  "expected_rows": 13590,
+  "rows": 13590,
+  "tax_year": 2023,
+  "sha256": "a9978f417fee5bea8de14d4a31e906182cfb58e2bd7693367ce6f568aeb2f249"
+}

@@ -119,32 +119,32 @@ Plan_for_Chicago_2030/
 
 ## Data Files
 
-### Tracked in Git (`data/reference/`)
-- `zoning_codes.csv` — zone code definitions (FAR, max height, use type)
-- `upzoning_scenario_changes.csv` — upzoning rule definitions
+### Local reference files (`data/reference/`)
+- `zoning_codes.csv` — zone code definitions (FAR, max height, use type); currently ignored rather than tracked, which needs correction for fresh clones.
+- `upzoning_scenario_changes.csv` — generated scenario results, including polygon WKT; this is not a rule-definition file.
 
 ### Downloaded by scripts (gitignored)
 - Cook County parcel geometries & assessed values
 - Chicago zoning districts GeoJSON
 - Historical assessments (1999–2025)
-- Census tracts, CTA stations *(planned)*
+- Census tracts, CTA stations, CTA bus routes and Metra stations (downloaders implemented)
 
 ## Backlog
 
-The project roadmap lives in `backlog/` as 10 GitHub-Issues-style epics:
+The project roadmap lives in `backlog/` as 10 epics. See the [audited priorities](backlog/README.md) and [Soldier Field publication review](docs/soldier_field_review.md). Implementation exists across the platform; production and empirical validation remain incomplete:
 
 | # | Epic | Status |
 |---|------|--------|
-| 01 | Repo & Tooling Setup | Done |
+| 01 | Repo & Tooling Setup | In Progress |
 | 02 | Data Ingestion Pipeline | In Progress |
 | 03 | Zoning Analysis Engine | In Progress |
 | 04 | Property Value Modelling | In Progress |
-| 05 | Transit & Walkability Scoring | Not Started |
+| 05 | Transit & Walkability Scoring | In Progress |
 | 06 | Interactive Map Platform | In Progress |
 | 07 | Scenario Comparison Tool | In Progress |
-| 08 | Public Website & Policy Brief | Not Started |
+| 08 | Public Website & Policy Brief | In Progress |
 | 09 | Testing, CI/CD & Containers | In Progress |
-| 10 | Community Engagement & Outreach | Not Started |
+| 10 | Community Engagement & Outreach | In Progress |
 
 ## Chicago Zoning Primer
 
@@ -181,4 +181,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, style guide, and 
 ---
 
 **Status**: Active Development
-**Last Updated**: March 2026
+**Last Updated**: November 19, 2026

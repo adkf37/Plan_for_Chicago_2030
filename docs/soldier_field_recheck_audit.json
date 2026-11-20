@@ -1,0 +1,155 @@
+{
+  "assessment_source_spot_check": {
+    "url": "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?%24where=year%3D2023+AND+pin+in%28%2717221020300000%27%2C%2717221020240000%27%2C%2717271020270000%27%2C%2717214140100000%27%2C%2717221101381293%27%29&%24select=pin%2Cyear%2Cclass%2Cboard_tot%2Ccertified_tot",
+    "rows": [
+      {
+        "pin": "17214140100000",
+        "year": "2023",
+        "class": "517",
+        "board_tot": "1216291",
+        "certified_tot": "1216291"
+      },
+      {
+        "pin": "17221020240000",
+        "year": "2023",
+        "class": "991",
+        "board_tot": "5310510",
+        "certified_tot": "5310510"
+      },
+      {
+        "pin": "17221020300000",
+        "year": "2023",
+        "class": "391",
+        "board_tot": "19054496",
+        "certified_tot": "19054496"
+      },
+      {
+        "pin": "17221101381293",
+        "year": "2023",
+        "class": "299",
+        "board_tot": "204160",
+        "certified_tot": "204160"
+      },
+      {
+        "pin": "17271020270000",
+        "year": "2023",
+        "class": "748",
+        "board_tot": "2714975",
+        "certified_tot": "2714975"
+      }
+    ]
+  },
+  "area_cross_check": [
+    {
+      "id": "parking_only",
+      "projected_acres": 16.078864341065884,
+      "ellipsoidal_acres": 16.078261049879988
+    },
+    {
+      "id": "stadium_and_parking",
+      "projected_acres": 30.56291718212231,
+      "ellipsoidal_acres": 30.5617766825414
+    },
+    {
+      "id": "connected_envelope",
+      "projected_acres": 47.11229616526941,
+      "ellipsoidal_acres": 47.11055310752812
+    }
+  ],
+  "comparator_method": "All four geographic midpoint quadrants of the fixed reference, including streets and zero-value land. Internal sensitivity, not independent validation; no preferred high-value quadrant.",
+  "scenarios": [
+    {
+      "scenario": "parking_only",
+      "acres": 16.078864341065884,
+      "comparisons": [
+        {
+          "id": "full",
+          "market_low": 225609005.0291675,
+          "market_high": 226424176.88057923
+        },
+        {
+          "id": "northwest",
+          "market_low": 173162594.44017518,
+          "market_high": 173162594.44017518
+        },
+        {
+          "id": "northeast",
+          "market_low": 463209204.4604418,
+          "market_high": 463209204.4604418
+        },
+        {
+          "id": "southwest",
+          "market_low": 61210844.10895601,
+          "market_high": 61210844.10895601
+        },
+        {
+          "id": "southeast",
+          "market_low": 204874535.99250725,
+          "market_high": 208135033.2559468
+        }
+      ]
+    },
+    {
+      "scenario": "stadium_and_parking",
+      "acres": 30.56291718212231,
+      "comparisons": [
+        {
+          "id": "full",
+          "market_low": 428840569.20840764,
+          "market_high": 430390058.60364205
+        },
+        {
+          "id": "northwest",
+          "market_low": 329149740.9676927,
+          "market_high": 329149740.9676927
+        },
+        {
+          "id": "northeast",
+          "market_low": 880474158.723001,
+          "market_high": 880474158.723001
+        },
+        {
+          "id": "southwest",
+          "market_low": 116350378.94882853,
+          "market_high": 116350378.94882853
+        },
+        {
+          "id": "southeast",
+          "market_low": 389428217.28226924,
+          "market_high": 395625813.43839383
+        }
+      ]
+    },
+    {
+      "scenario": "connected_envelope",
+      "acres": 47.11229616526941,
+      "comparisons": [
+        {
+          "id": "full",
+          "market_low": 661051554.203317,
+          "market_high": 663440069.7647808
+        },
+        {
+          "id": "northwest",
+          "market_low": 507379579.86099654,
+          "market_high": 507379579.86099654
+        },
+        {
+          "id": "northeast",
+          "market_low": 1357238220.5677912,
+          "market_high": 1357238220.5677912
+        },
+        {
+          "id": "southwest",
+          "market_low": 179352431.55339062,
+          "market_high": 179352431.55339062
+        },
+        {
+          "id": "southeast",
+          "market_low": 600297981.9755915,
+          "market_high": 609851487.0903085
+        }
+      ]
+    }
+  ]
+}

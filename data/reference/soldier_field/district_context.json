@@ -1,0 +1,22 @@
+{
+  "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export",
+  "params": {
+    "bbox": "-87.633,41.844,-87.601,41.870",
+    "bboxSR": 4326,
+    "imageSR": 3857,
+    "size": "1600,1750",
+    "format": "jpg",
+    "f": "image"
+  },
+  "bounds": [
+    [
+      41.84396577388911,
+      -87.63299999999997
+    ],
+    [
+      41.87003421218097,
+      -87.601
+    ]
+  ],
+  "attribution": "Esri World Imagery; imagery dates vary, not established. Context only, not boundary evidence."
+}

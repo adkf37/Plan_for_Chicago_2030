@@ -1,0 +1,114 @@
+{
+  "inputs": [
+    {
+      "name": "parcels_2023.csv",
+      "bytes": 939977,
+      "sha256": "801ab393690e31f16c19333262e4c316e9c9b5e5ffab5bad7bbb253aa785eeb7"
+    },
+    {
+      "name": "Assessor_-_Assessed_Values_20250430.csv",
+      "bytes": 167273542,
+      "sha256": "d525f9a501c7bc81daec90f4aa54969b3ebedc6b5320fc250cae2964e12b1bdd"
+    },
+    {
+      "name": "boundaries.geojson",
+      "bytes": 77814,
+      "sha256": "06a49b182dc1c0007b88aa02b8945eb181932faa4de3eb9b83c6bfb6b031703f"
+    },
+    {
+      "name": "valuation_assumptions.json",
+      "bytes": 3023,
+      "sha256": "ef6b435586cc033bd5a5cd92eb945aa17c25214ec6ce71451661ef25a8e70382"
+    }
+  ],
+  "reference": {
+    "assessment_year": 2023,
+    "parcel_year": 2023,
+    "assessment_stage": "certified_tot",
+    "reference_pins": 13590,
+    "matched_pins": 13590,
+    "unmatched_pins": 0,
+    "matched_missing_value_pins": 0,
+    "zero_value_pins": 247,
+    "positive_value_pins": 13343,
+    "class_changed_pins": 0,
+    "gross_area_acres": 304.2456168172936,
+    "observed_assessed_value": 485664537.0,
+    "observed_assessed_value_per_gross_acre": 1596290.9904192723,
+    "status": "Aligned 2023 comparison; Board of Review stage; fixed-rate pre-exemption benchmarks",
+    "valuation_assessment_stage": "board_tot",
+    "valuation_assessed_value": 476676835.0,
+    "market_equivalent_low": 4268992476.0,
+    "market_equivalent_high": 4284417226.0,
+    "uncertain_incentive_pins": 2,
+    "uncertain_incentive_assessed_value": 3084950.0,
+    "reference_pre_exemption_tax_benchmark": 100903173.67154682,
+    "market_value_scope": "Assessment-implied taxable-property equivalent; exempt/railroad zero assessments are excluded, not valued",
+    "tax_scope": "Fixed 2023 rates before exemptions; not actual bills or incremental revenue"
+  },
+  "scenarios": [
+    {
+      "scenario": "parking_only",
+      "name": "Parking only; stadium retained",
+      "assessment_year": 2023,
+      "parcel_year": 2023,
+      "candidate_gross_acres": 16.078864341065884,
+      "inclusion_rule": "Waldron Deck and South Lot exteriors only; excludes stadium and intervening roads/open space",
+      "area_fraction": 1.0,
+      "value_density_factor": 1.0,
+      "assumed_neighborhood_gross_acres": 16.078864341065884,
+      "illustrative_assessed_value": 25191561.491241816,
+      "status": "gross stabilized analogy; not incremental revenue or a 2030 forecast",
+      "assessment_stage": "board_tot",
+      "market_equivalent_low": 225609005.0291675,
+      "market_equivalent_high": 226424176.88057923,
+      "gross_tax_benchmark_before_exemptions": 5315172.219475987,
+      "city_corporate_component_before_exemptions": 1224883.1476476472,
+      "tax_scope": "Fixed 2023 general Chicago benchmark, before exemptions, no special district charge assumed. Future tax-code assignment is not established. Corporate city component excludes separately listed library and school-building funds. Neither measure is incremental or net city revenue; TIF allocation is not modeled."
+    },
+    {
+      "scenario": "stadium_and_parking",
+      "name": "Stadium plus south parking footprints",
+      "assessment_year": 2023,
+      "parcel_year": 2023,
+      "candidate_gross_acres": 30.56291718212231,
+      "inclusion_rule": "Three mapped exteriors only; excludes intervening public space and roads",
+      "area_fraction": 1.0,
+      "value_density_factor": 1.0,
+      "assumed_neighborhood_gross_acres": 30.56291718212231,
+      "illustrative_assessed_value": 47884451.98699436,
+      "status": "gross stabilized analogy; not incremental revenue or a 2030 forecast",
+      "assessment_stage": "board_tot",
+      "market_equivalent_low": 428840569.20840764,
+      "market_equivalent_high": 430390058.603642,
+      "gross_tax_benchmark_before_exemptions": 10103149.383359559,
+      "city_corporate_component_before_exemptions": 2328274.025157342,
+      "tax_scope": "Fixed 2023 general Chicago benchmark, before exemptions, no special district charge assumed. Future tax-code assignment is not established. Corporate city component excludes separately listed library and school-building funds. Neither measure is incremental or net city revenue; TIF allocation is not modeled."
+    },
+    {
+      "scenario": "connected_envelope",
+      "name": "Broader connected envelope",
+      "assessment_year": 2023,
+      "parcel_year": 2023,
+      "candidate_gross_acres": 47.11229616526941,
+      "inclusion_rule": "Projected convex hull of the three footprints; includes intervening roads and open space, requiring separate review",
+      "area_fraction": 1.0,
+      "value_density_factor": 1.0,
+      "assumed_neighborhood_gross_acres": 47.11229616526941,
+      "illustrative_assessed_value": 73813192.31668472,
+      "status": "gross stabilized analogy; not incremental revenue or a 2030 forecast",
+      "assessment_stage": "board_tot",
+      "market_equivalent_low": 661051554.203317,
+      "market_equivalent_high": 663440069.7647808,
+      "gross_tax_benchmark_before_exemptions": 15573859.10233789,
+      "city_corporate_component_before_exemptions": 3589000.8395952363,
+      "tax_scope": "Fixed 2023 general Chicago benchmark, before exemptions, no special district charge assumed. Future tax-code assignment is not established. Corporate city component excludes separately listed library and school-building funds. Neither measure is incremental or net city revenue; TIF allocation is not modeled."
+    }
+  ],
+  "area_method": "EPSG:26971 projected square metres / 4046.8564224",
+  "sensitivity": "three sourced-area scenarios and density factors 0.8/1.0/1.2; not probabilities",
+  "review_date": "2026-11-19",
+  "method_notes": "soldier_field_boundary_and_value_update.md",
+  "assumptions": "../data/reference/soldier_field/valuation_assumptions.json",
+  "boundaries": "../data/reference/soldier_field/boundaries.geojson"
+}

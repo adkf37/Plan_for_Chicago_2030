@@ -1,0 +1,38 @@
+{
+  "type": "Feature",
+  "properties": {
+    "id": "wabash_michigan",
+    "name": "Wabash to Michigan, Roosevelt to 14th",
+    "method": "Straight segments between mapped intersection centers. Divided carriageways averaged at intersections. Gross area includes streets to their centerlines. PIN centroids on or inside the polygon are included.",
+    "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-87.629,41.862,-87.6225,41.869",
+    "attribution": "OpenStreetMap contributors, ODbL",
+    "retrieved": "2026-11-20"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -87.62583075,
+          41.8674424
+        ],
+        [
+          -87.6241146,
+          41.86745275
+        ],
+        [
+          -87.6240044,
+          41.86412005
+        ],
+        [
+          -87.6257585,
+          41.8640761
+        ],
+        [
+          -87.62583075,
+          41.8674424
+        ]
+      ]
+    ]
+  }
+}

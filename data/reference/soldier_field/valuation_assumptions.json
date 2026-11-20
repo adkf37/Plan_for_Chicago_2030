@@ -1,0 +1,42 @@
+{
+  "tax_year": 2023,
+  "assessment_stage": "board_tot",
+  "assessment_stage_note": "Board of Review values in the local 2023 assessment export; not a claim that subsequent certificates of error or tax-bill adjustments are included.",
+  "equalization_factor": 3.0163,
+  "candidate_composite_rate_percent": 6.995,
+  "candidate_city_corporate_rate_percent": 1.612,
+  "candidate_rate_note": "Fixed 2023 general Chicago benchmark, before exemptions, no special district charge assumed. Future tax-code assignment is not established. Corporate city component excludes separately listed library and school-building funds. Neither measure is incremental or net city revenue; TIF allocation is not modeled.",
+  "exemption_assumption": "No exemptions deducted in headline benchmarks. Actual billed taxes are not estimated.",
+  "standard_levels": {
+    "100": 0.10, "190": 0.10,
+    "207": 0.10, "208": 0.10, "212": 0.10, "225": 0.10,
+    "241": 0.10, "278": 0.10, "290": 0.10, "295": 0.10,
+    "297": 0.10, "299": 0.10,
+    "318": 0.10, "390": 0.10, "391": 0.10, "397": 0.10,
+    "517": 0.25, "522": 0.25, "523": 0.25, "528": 0.25,
+    "530": 0.25, "533": 0.25, "580": 0.25, "590": 0.25,
+    "591": 0.25, "592": 0.25, "593": 0.25, "597": 0.25,
+    "599": 0.25, "991": 0.10
+  },
+  "incentive_level_options": {"748": [0.10, 0.15, 0.20]},
+  "incentive_note": "748 is Class 7b. The two 2023 records do not identify incentive phase, so market-equivalent bounds cover the documented 10/15/20 percent levels. Class 991 is Class 9 rental housing at 10 percent. These are classification uncertainty bounds, not confidence intervals.",
+  "zero_only_excluded_classes": ["EX", "RR"],
+  "reference_tax_code_rates_percent": {
+    "76041": 6.995, "76075": 6.995, "76081": 7.018,
+    "76082": 7.018, "76083": 7.018, "76084": 7.018,
+    "76086": 7.018, "76087": 7.018, "76090": 7.018,
+    "76091": 7.018, "76097": 6.995, "76101": 7.018,
+    "76102": 7.018
+  },
+  "sources": {
+    "class_definitions": "https://prodassets.cookcountyassessoril.gov/s3fs-public/form_documents/Class_codes_definitions_12.16.24_0.pdf",
+    "class_dictionary": "https://github.com/ccao-data/data-architecture/blob/master/dbt/seeds/ccao/ccao.class_dict.csv",
+    "classification_glossary": "https://www.cookcountyassessoril.gov/glossary",
+    "class_3_assessment_level": "https://prodassets.cookcountyassessoril.gov/s3fs-public/form_documents/cls3b.pdf",
+    "class_7b_levels": "https://www.cookcountyil.gov/service/property-tax-incentives",
+    "class_9_level": "https://prodassets.cookcountyassessoril.gov/s3fs-public/2024-06/Class9EligibiltyBulletin2024.pdf",
+    "equalization_factor": "https://taxarchive.illinois.gov/research/news/2023-cook-county-final-multiplier-announced.html",
+    "general_and_city_rates": "https://www.cookcountyclerkil.gov/sites/default/files/pdfs/2023%20Tax%20Rate%20Report.pdf#page=26",
+    "reference_tax_codes": "https://www.cookcountyclerkil.gov/sites/default/files/pdfs/2023%20Tax%20Code%20Rate%2010%20year%20Summary.pdf#page=183"
+  }
+}

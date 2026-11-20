@@ -1,0 +1,54 @@
+{
+  "inputs": [
+    {
+      "name": "Assessor_-_Parcel_Universe_20250430.csv",
+      "bytes": 1487581603,
+      "sha256": "fe805c19f559e50f786eaa7ebf390e8302ebff309174f3ce9ab23b934e0d30f3"
+    },
+    {
+      "name": "Assessor_-_Assessed_Values_20250430.csv",
+      "bytes": 167273542,
+      "sha256": "d525f9a501c7bc81daec90f4aa54969b3ebedc6b5320fc250cae2964e12b1bdd"
+    }
+  ],
+  "reference": {
+    "assessment_year": 2023,
+    "parcel_year": 2024,
+    "assessment_stage": "certified_tot",
+    "reference_pins": 13590,
+    "matched_pins": 13590,
+    "unmatched_pins": 0,
+    "matched_missing_value_pins": 0,
+    "zero_value_pins": 247,
+    "positive_value_pins": 13343,
+    "class_changed_pins": 15,
+    "gross_area_acres": 304.46457294896413,
+    "observed_assessed_value": 485664537.0,
+    "observed_assessed_value_per_gross_acre": 1595143.0154778943,
+    "status": "exploratory; market value and tax revenue not estimated"
+  },
+  "candidate": {
+    "assessment_year": 2023,
+    "parcel_year": 2024,
+    "candidate_box_acres": 273.6798723432741,
+    "area_fraction": 1.0,
+    "value_density_factor": 1.0,
+    "assumed_neighborhood_gross_acres": 273.6798723432741,
+    "illustrative_assessed_value": 436558536.84525543,
+    "status": "gross stabilized analogy; not incremental revenue or a 2030 forecast"
+  },
+  "reference_bbox": {
+    "min_lon": -87.6308,
+    "max_lon": -87.6219,
+    "min_lat": 41.8524,
+    "max_lat": 41.8674
+  },
+  "candidate_bbox": {
+    "min_lon": -87.62,
+    "max_lon": -87.61,
+    "min_lat": 41.853,
+    "max_lat": 41.865
+  },
+  "area_method": "111320 metres per latitude degree, cosine longitude approximation",
+  "sensitivity": "assumed gross area shares and value-density multipliers, not probabilities"
+}

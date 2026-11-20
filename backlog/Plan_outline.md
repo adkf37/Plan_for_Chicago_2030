@@ -1,5 +1,8 @@
 # Plan for Chicago Project Outline
 
+This is the long-term vision. For verified implementation status and the current
+Soldier Field publication milestone, see the [audited backlog](README.md).
+
 ## Overview
 
 A comprehensive strategy to redesign Chicago’s land use and transportation, delivered via an interactive web map and accompanying website. The project will showcase current vs. proposed scenarios, quantify impacts (housing, property values, traffic), and provide policy context and case studies.

@@ -1,0 +1,74 @@
+{
+  "year": 2023,
+  "stage": "board_tot",
+  "address_dataset": "https://datacatalog.cookcountyil.gov/resource/3723-97qp.json",
+  "assessment_dataset": "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json",
+  "query": "year=2023 AND (starts_with(prop_address_full,'1210 S INDIANA') OR starts_with(prop_address_full,'1211 S PRAIRIE') OR starts_with(prop_address_full,'1201 S PRAIRIE'))",
+  "city_filter": "CHICAGO",
+  "results": [
+    {
+      "address": "1201 S PRAIRIE AVE",
+      "pins": 667,
+      "board_tot": 27886525,
+      "market_equivalent": 278071900.0
+    },
+    {
+      "address": "1211 S PRAIRIE AVE",
+      "pins": 691,
+      "board_tot": 28615816,
+      "market_equivalent": 286158160.0
+    }
+  ],
+  "by_class": [
+    {
+      "address": "1201 S PRAIRIE AVE",
+      "class": "297",
+      "level": 0.1,
+      "pins": 1,
+      "board_tot": 859105
+    },
+    {
+      "address": "1201 S PRAIRIE AVE",
+      "class": "299",
+      "level": 0.1,
+      "pins": 664,
+      "board_tot": 26895195
+    },
+    {
+      "address": "1201 S PRAIRIE AVE",
+      "class": "597",
+      "level": 0.25,
+      "pins": 1,
+      "board_tot": 132225
+    },
+    {
+      "address": "1201 S PRAIRIE AVE",
+      "class": "EX",
+      "level": 1.0,
+      "pins": 1,
+      "board_tot": 0
+    },
+    {
+      "address": "1211 S PRAIRIE AVE",
+      "class": "100",
+      "level": 0.1,
+      "pins": 1,
+      "board_tot": 4700
+    },
+    {
+      "address": "1211 S PRAIRIE AVE",
+      "class": "299",
+      "level": 0.1,
+      "pins": 690,
+      "board_tot": 28611116
+    }
+  ],
+  "nema_candidate": {
+    "pin": "17221020300000",
+    "assessment_address": "1201 S MICHIGAN AVE",
+    "class_code": "391",
+    "board_tot": 19054496,
+    "market_equivalent": 190544960,
+    "status": "Candidate parcel only. Whole-building coverage pending title or assessor crosswalk."
+  }
+}

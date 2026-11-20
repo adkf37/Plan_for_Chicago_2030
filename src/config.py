@@ -62,6 +62,10 @@ METRA_STATIONS_GEOJSON = GEOJSON_DIR / "metra_stations.geojson"
 # Reference data (small, tracked in git)
 REFERENCE_DIR = PROJECT_ROOT / "data" / "reference"
 ZONING_CODES_CSV = REFERENCE_DIR / "zoning_codes.csv"
+SOLDIER_FIELD_REFERENCE_DIR = REFERENCE_DIR / "soldier_field"
+SOLDIER_FIELD_BOUNDARIES = SOLDIER_FIELD_REFERENCE_DIR / "boundaries.geojson"
+SOLDIER_FIELD_ASSUMPTIONS = SOLDIER_FIELD_REFERENCE_DIR / "valuation_assumptions.json"
+SOLDIER_FIELD_COMPARATOR_AUDIT = SOLDIER_FIELD_REFERENCE_DIR / "comparator_audit.json"
 
 # Processed data (script outputs — gitignored)
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
@@ -91,6 +95,8 @@ TRANSIT_SHED_MAP = MAPS_DIR / "transit_shed_map.html"
 # Site / web-map data (optimised GeoJSON for MapLibre)
 SITE_DIR = PROJECT_ROOT / "site"
 SITE_DATA_DIR = SITE_DIR / "data"
+SOLDIER_FIELD_ASSETS = SITE_DIR / "assets" / "soldier-field"
+SOLDIER_FIELD_TEMPLATE = SITE_DIR / "templates" / "soldier_field.html"
 
 # Analysis results
 ANALYSIS_RESULTS_DIR = PROJECT_ROOT / "analysis_results"
@@ -101,6 +107,9 @@ VISUALIZATIONS_DIR = REPORTS_DIR / "visualizations"
 
 # Cache
 CACHE_DIR = PROJECT_ROOT / "cache"
+SOLDIER_FIELD_SOURCE_DIR = CACHE_DIR / "soldier_field_sources"
+SOLDIER_FIELD_MAP = MAPS_DIR / "soldier_field_analysis_map.html"
+SOLDIER_FIELD_FIGURE = VISUALIZATIONS_DIR / "soldier_field_boundaries.png"
 
 # --- Analysis Configuration ---
 

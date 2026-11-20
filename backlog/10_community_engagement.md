@@ -1,6 +1,6 @@
 # Epic 10 — Community Engagement & Outreach
 
-> **Status:** Not Started  
+> **Status:** In Progress (contributor documentation only; outreach not started)
 > **Priority:** P3  
 > **Owner:** —  
 
@@ -10,7 +10,8 @@ and residents so they can use, critique, and extend the analysis.
 
 ## Tasks
 
-- [ ] Write `CONTRIBUTING.md` with style guide, PR workflow, and issue templates
+- [x] Write `CONTRIBUTING.md` with style guide and PR workflow; linked from README
+- [ ] Reconcile developer setup instructions with actual formatter/test dependencies
 - [ ] Create GitHub Issue templates (Bug, Feature Request, Data Question)
 - [ ] Add open-data portal page listing downloadable layers with metadata
 - [ ] Publish methodology notebook (Jupyter) linking code to narrative claims
@@ -28,10 +29,14 @@ and residents so they can use, critique, and extend the analysis.
 - Non-technical explainer is accessible from the site
 
 ## Dependencies
-- Epic 08 (website live)
+- Epic 08 for public-site outreach; documentation and issue templates can proceed before deployment
 - Epic 06 (interactive map)
 
 ## Reference (from Plan Outline § Future)
 > Create an open data portal with downloadable layers, metadata, and change logs.  
 > Schedule virtual workshops and mapathons.  
 > Partner with local organizations to co-develop neighborhood-specific overlays.
+
+## Audit - 2026-11-19
+
+Status reflects checked-in implementation; unchecked acceptance criteria still require evidence. See [current priorities](README.md) and [Soldier Field review](../docs/soldier_field_review.md).

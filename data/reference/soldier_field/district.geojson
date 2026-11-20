@@ -1,0 +1,326 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -87.6213,
+              41.8673
+            ],
+            [
+              -87.6204,
+              41.8673
+            ],
+            [
+              -87.6197,
+              41.8644
+            ],
+            [
+              -87.6166,
+              41.8644
+            ],
+            [
+              -87.6135,
+              41.8656
+            ],
+            [
+              -87.61,
+              41.8664
+            ],
+            [
+              -87.6075,
+              41.8664
+            ],
+            [
+              -87.6071,
+              41.8658
+            ],
+            [
+              -87.6062,
+              41.8656
+            ],
+            [
+              -87.6071,
+              41.864
+            ],
+            [
+              -87.606,
+              41.862
+            ],
+            [
+              -87.6059,
+              41.86
+            ],
+            [
+              -87.6069,
+              41.86
+            ],
+            [
+              -87.6066,
+              41.8535
+            ],
+            [
+              -87.6098,
+              41.8533
+            ],
+            [
+              -87.6095,
+              41.8503
+            ],
+            [
+              -87.6112,
+              41.8527
+            ],
+            [
+              -87.6118,
+              41.8548
+            ],
+            [
+              -87.6133,
+              41.8555
+            ],
+            [
+              -87.6153,
+              41.855
+            ],
+            [
+              -87.6176,
+              41.8553
+            ],
+            [
+              -87.6198,
+              41.8591
+            ],
+            [
+              -87.6215,
+              41.8603
+            ],
+            [
+              -87.6199,
+              41.8604
+            ],
+            [
+              -87.6212,
+              41.8644
+            ],
+            [
+              -87.6213,
+              41.8673
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "district",
+        "name": "Tracks to Northerly Island",
+        "role": "study",
+        "gross_acres": 343.66048455699786,
+        "inclusion_rule": "Hand-drawn study perimeter includes infrastructure, water, park and potential building sites"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.6209,
+            41.8672
+          ],
+          [
+            -87.6201,
+            41.862
+          ],
+          [
+            -87.6171,
+            41.8554
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Deck over operating rail tracks",
+        "role": "alignment"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.6198,
+            41.8671
+          ],
+          [
+            -87.6184,
+            41.862
+          ],
+          [
+            -87.6157,
+            41.8553
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Remove district segment of Lake Shore Drive",
+        "role": "alignment"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.6061,
+            41.8655
+          ],
+          [
+            -87.607,
+            41.864
+          ],
+          [
+            -87.606,
+            41.862
+          ],
+          [
+            -87.606,
+            41.86
+          ],
+          [
+            -87.6069,
+            41.86
+          ],
+          [
+            -87.6066,
+            41.8535
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Public beach and park on the lake edge",
+        "role": "alignment"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.622,
+            41.8642
+          ],
+          [
+            -87.6069,
+            41.8642
+          ]
+        ]
+      },
+      "properties": {
+        "name": "14th Street to beach",
+        "role": "alignment"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.622,
+            41.8607
+          ],
+          [
+            -87.606,
+            41.8607
+          ]
+        ]
+      },
+      "properties": {
+        "name": "16th Street to beach",
+        "role": "alignment"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -87.619,
+            41.8575
+          ],
+          [
+            -87.6068,
+            41.8575
+          ]
+        ]
+      },
+      "properties": {
+        "name": "18th Street to beach",
+        "role": "alignment"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.6109,
+          41.8619
+        ]
+      },
+      "properties": {
+        "role": "intervention",
+        "name": "Fill Burnham Harbor for development"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.6088,
+          41.8657
+        ]
+      },
+      "properties": {
+        "role": "intervention",
+        "name": "Remove Adler parking lot"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.608,
+          41.8626
+        ]
+      },
+      "properties": {
+        "role": "intervention",
+        "name": "Clear island structures"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.6167,
+          41.8623
+        ]
+      },
+      "properties": {
+        "role": "intervention",
+        "name": "Remove Soldier Field"
+      }
+    }
+  ]
+}

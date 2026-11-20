@@ -1,6 +1,6 @@
 # Epic 07 — Scenario Comparison Tool
 
-> **Status:** In Progress  
+> **Status:** In Progress
 > **Priority:** P1  
 > **Owner:** —  
 
@@ -12,10 +12,12 @@ displacement risk.
 ## Tasks
 
 - [x] Build initial scenario comparison script (`src/compare_zoning_scenarios.py`)
-- [x] Define upzoning rules in `data/reference/upzoning_scenario_changes.csv`
-- [ ] Add ≥ 3 named scenarios (Baseline, Moderate TOD, Aggressive City-Wide)
+- [x] Implement RS-3 -> RT-4 rule in `src/compare_zoning_scenarios.py`
+- [ ] Consolidate rules into a tracked scenario specification. `upzoning_scenario_changes.csv` contains generated polygon results, not input rules.
+- [ ] Unify at least 3 named scenarios across comparison map, value engines and UI (three already exist in `property_value.SCENARIOS`)
 - [ ] Generate per-scenario GeoJSON with modified zone attributes
-- [ ] Compute delta metrics: Δ housing units, Δ assessed value, Δ FAR
+- [x] Compute per-feature FAR differences for initial zoning comparison
+- [ ] Compute housing/value deltas and area-weighted floor-area capacity; summed dimensionless FAR is not total development capacity
 - [ ] Build comparison dashboard page (site/scenarios.html) with summary cards
 - [ ] Implement configurable parameters (upzone radius, FAR multiplier) via UI sliders
 - [ ] Add sensitivity analysis: how results change with ± 20 % appreciation assumption
@@ -35,3 +37,7 @@ displacement risk.
 ## Reference (from Plan Outline § Future)
 > Include scenario comparison dashboards (status quo, moderate reform, ambitious transformation)
 > with configurable parameters for sensitivity testing.
+
+## Audit - 2026-11-19
+
+Status reflects checked-in implementation; unchecked acceptance criteria still require evidence. See [current priorities](README.md) and [Soldier Field review](../docs/soldier_field_review.md).

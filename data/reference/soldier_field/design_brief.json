@@ -1,0 +1,30 @@
+{
+  "scope": "Rail corridor to the lake-facing edge of Northerly Island",
+  "working_scenario": "district",
+  "primary_comparator": "wabash_michigan",
+  "target_stories": 40,
+  "proposal": [
+    "Deck over operating rail tracks",
+    "Remove district segment of Lake Shore Drive",
+    "Public beach and park on the lake edge",
+    "14th Street to beach",
+    "16th Street to beach",
+    "18th Street to beach",
+    "Fill Burnham Harbor for development",
+    "Remove Adler parking lot",
+    "Clear island structures",
+    "Remove Soldier Field"
+  ],
+  "rail": "Full deck over existing alignment for continuous walkable blocks",
+  "shoreline_width_options_ft": [
+    100,
+    150,
+    200
+  ],
+  "deferred": [
+    "McCormick Place redevelopment",
+    "Removal of Lake Shore Drive outside the study corridor"
+  ],
+  "boundary_status": "Schematic gross study perimeter. Comparable neighborhood acreage pending land allocation.",
+  "museum_assumption": "Preserve Adler building pending clarification. Its parking lot is in scope."
+}
