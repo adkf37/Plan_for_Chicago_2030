@@ -1,0 +1,96 @@
+# Soldier Field map copy
+# Edit the text beneath each [label]. Keep the labels and __DATA__ fields.
+# From the repository root, run python -m viz.soldier_field_map and refresh the HTML.
+
+[headline]
+Chicago's next premier lakefront neighborhood
+
+[pitch]
+Walk from the South Loop to the sand on 14th, 16th or 18th. The proposal aims for two miles of accessible public beach and $12 billion in property value at full buildout.
+
+[lead_caption]
+Concept views of the proposed neighborhood
+
+[proposal_title]
+The proposal
+
+[today_view]
+Find the stadium on the west side of Burnham Harbor and Northerly Island on the east. Switch to Proposed to see where the same walk could take you.
+
+[proposed_view]
+Follow 14th, 16th or 18th east across the rail deck and the filled harbor. Select a street name to explore its route to the sand.
+
+[fourteenth_landing]
+14th Street would lead to a paved gathering place near the museum campus. Visitors could walk north through a new green on the Adler parking lot or turn east onto a public beach walk.
+
+[sixteenth_landing]
+16th Street would serve as the neighborhood shopping street. Shops could open onto wide sidewalks, with an accessible path continuing through the planted dunes to the beach.
+
+[eighteenth_landing]
+18th Street would reach a quieter beach entrance. The promenade would turn south beside a proposed park on the island, with room for walking, cycling and dune planting.
+
+[plan_note]
+This first street plan tests blocks roughly 300 feet across, courtyard buildings, a square on the stadium site and three public beach entrances. Dark roofs suggest where taller buildings could fit. The sketch does not establish building capacity, construction feasibility or a property-value total.
+
+[grid_title]
+Reconnect the grid
+
+[grid]
+Build a deck above the active rail tracks in their existing alignment. Carry sidewalks, cycling routes and short blocks across the deck. Remove the district segment of Lake Shore Drive and extend 14th, 16th and 18th streets east to public beach entrances.
+
+[blocks_title]
+Build on the former harbor
+
+[blocks]
+Remove Soldier Field and its southern parking facilities. Fill Burnham Harbor and lay out streets across the new land. Roughly 40-story residential towers would rise above lower buildings with shops, frequent doors and courtyards.
+
+[shore_title]
+Keep the shore public
+
+[shore]
+Clear the structures on Northerly Island and the Adler parking lot. The working plan retains Adler Planetarium. Reserve a continuous beach and park along the open lake, using 150 feet as the working width and testing 100 and 200 feet where conditions differ. The schematic shoreline line currently measures about 0.9 mile. The two-mile beach goal requires a longer mapped alignment.
+
+[evidence_title]
+What comparable blocks are worth
+
+[assessment]
+__BENCHMARK_NAME__ covers __ACRES__ gross acres, measured between approximate street centers. The 2023 Board of Review total is __ASSESSED__. Converting each assessment at its property-class rate gives a market equivalent of __MARKET__.
+
+[exempt_accounts]
+Of __PINS__ tax accounts, __EXEMPT__ are classified exempt. They remain in the acreage and contribute zero assessed dollars. The count measures tax accounts, which can include individual condo units and parking spaces.
+
+[benchmark_title]
+__DENSITY__ per gross neighborhood acre
+
+[land_budget]
+Apply this benchmark to the acres ultimately allocated to comparable blocks and their local streets. The approximately 344-acre study perimeter also includes dedicated public shore, civic space and major infrastructure. The district total depends on that allocation. At the 2023 benchmark, $12 billion would require about 337 comparable acres within the 344-acre study perimeter. The final land budget and tower program will determine how much property value the district can support.
+
+[crosscheck]
+A check using Strong Towns Chicago's 2024 mapped values gives $38.12 million per acre over these same street boundaries. Our calculation using 2024 County records gives $38.16 million.
+
+[costs]
+Deck construction, harbor fill and shoreline works require their own cost estimates. McCormick Place redevelopment and citywide Drive removal are later proposals.
+
+[illustration_title]
+Forty stories. Walkable blocks. Public beaches.
+
+[illustration_intro]
+Imagine turning off a busy shopping street and seeing Lake Michigan at the end of the block. Towers rise above shops and courtyards, while the public promenade follows the beach.
+
+[aerial_title]
+Towers and a public waterfront
+
+[aerial_caption]
+New blocks occupy the former harbor basin. Eastbound streets reach the continuous beach and park along Lake Michigan. Shoreline, tower count and connections are illustrative, not georeferenced.
+
+[street_title]
+Human scale at street level
+
+[street_caption]
+Illustrative 4–6-story street walls with taller buildings set back above them. Shops, shade, short crossings and cycling routes shape daily life. Floor area, housing yield, beach access and construction costs still require a measured plan.
+
+[massing_note]
+Height alone does not determine value. A 40-story scenario needs tower count, floorplates, podium area, street and public-space allocation, and market evidence. Beach feasibility, access and cost are a separate part of the proposal.
+
+[method]
+Cook County 2023 parcel locations and Board of Review assessments, matched by PIN. The comparison polygon joins the mapped centers of the four intersections. Its gross area includes local streets to their centerlines. The map uses existing Esri imagery and OpenStreetMap geometry. The concept illustrations depict the proposal.

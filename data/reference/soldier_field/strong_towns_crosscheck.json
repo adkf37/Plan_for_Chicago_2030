@@ -1,0 +1,643 @@
+{
+  "review_date": "2026-11-20",
+  "source_page": "https://www.strongtownschicago.org/value-per-acre-map",
+  "project_source_commit": "cd067bf955c4e78fb3cc2e0fd2a4a661294e9565",
+  "tile_archive": "https://tiles.open-advocacy.com/chicago_parcels_hq.pmtiles",
+  "etag": "\"5a1fe936dabeb23a49800cd559864e7e-44\"",
+  "tile_coordinates_xyz": [
+    [
+      16816,
+      24360,
+      16
+    ],
+    [
+      16816,
+      24361,
+      16
+    ]
+  ],
+  "boundary_file": "wabash_michigan.geojson",
+  "selection": "Zoom 16 all-parcels Chicago archive. Union buffered tile fragments by displayed pin_10 in Web Mercator and select union centroids covered by street polygon. Sum original feature attributes once per displayed identifier. Whole-lot map acres are retained.",
+  "year": 2024,
+  "gross_acres": 13.24950967379074,
+  "county_accounts": 986,
+  "county_2024_source": "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json",
+  "county_method": "Select 2024 Parcel Universe centroids covered by the same polygon and join same-year Board totals by unique 14-digit PIN. Convert observed classes at the documented levels in valuation_assumptions.json. All missing class multipliers in this selection are zero-value EX.",
+  "county_2024_by_pin10": [
+    {
+      "pin10": "1722101001",
+      "accounts": 1,
+      "board_total": 21410,
+      "market_equivalent": 85640
+    },
+    {
+      "pin10": "1722101002",
+      "accounts": 1,
+      "board_total": 178484,
+      "market_equivalent": 713936
+    },
+    {
+      "pin10": "1722101003",
+      "accounts": 1,
+      "board_total": 178695,
+      "market_equivalent": 714780
+    },
+    {
+      "pin10": "1722101004",
+      "accounts": 1,
+      "board_total": 178799,
+      "market_equivalent": 715196
+    },
+    {
+      "pin10": "1722101005",
+      "accounts": 1,
+      "board_total": 286262,
+      "market_equivalent": 1145048
+    },
+    {
+      "pin10": "1722101006",
+      "accounts": 1,
+      "board_total": 143131,
+      "market_equivalent": 572524
+    },
+    {
+      "pin10": "1722101007",
+      "accounts": 1,
+      "board_total": 205741,
+      "market_equivalent": 822964
+    },
+    {
+      "pin10": "1722101008",
+      "accounts": 1,
+      "board_total": 64783,
+      "market_equivalent": 259132
+    },
+    {
+      "pin10": "1722101009",
+      "accounts": 1,
+      "board_total": 135459,
+      "market_equivalent": 541836
+    },
+    {
+      "pin10": "1722101010",
+      "accounts": 1,
+      "board_total": 405259,
+      "market_equivalent": 1621036
+    },
+    {
+      "pin10": "1722101011",
+      "accounts": 1,
+      "board_total": 225000,
+      "market_equivalent": 2250000
+    },
+    {
+      "pin10": "1722101013",
+      "accounts": 1,
+      "board_total": 146371,
+      "market_equivalent": 585484
+    },
+    {
+      "pin10": "1722101014",
+      "accounts": 1,
+      "board_total": 137853,
+      "market_equivalent": 551412
+    },
+    {
+      "pin10": "1722101017",
+      "accounts": 1,
+      "board_total": 1361836,
+      "market_equivalent": 5447344
+    },
+    {
+      "pin10": "1722101026",
+      "accounts": 1,
+      "board_total": 639720,
+      "market_equivalent": 2558880
+    },
+    {
+      "pin10": "1722101032",
+      "accounts": 1,
+      "board_total": 0,
+      "market_equivalent": 0
+    },
+    {
+      "pin10": "1722101033",
+      "accounts": 1,
+      "board_total": 0,
+      "market_equivalent": 0
+    },
+    {
+      "pin10": "1722101034",
+      "accounts": 1,
+      "board_total": 4435689,
+      "market_equivalent": 44356890
+    },
+    {
+      "pin10": "1722101035",
+      "accounts": 1,
+      "board_total": 1404456,
+      "market_equivalent": 14044560
+    },
+    {
+      "pin10": "1722101037",
+      "accounts": 1,
+      "board_total": 1502664,
+      "market_equivalent": 6010656
+    },
+    {
+      "pin10": "1722101038",
+      "accounts": 51,
+      "board_total": 1037335,
+      "market_equivalent": 10074850
+    },
+    {
+      "pin10": "1722101039",
+      "accounts": 12,
+      "board_total": 189789,
+      "market_equivalent": 1554390
+    },
+    {
+      "pin10": "1722101042",
+      "accounts": 1,
+      "board_total": 463500,
+      "market_equivalent": 1854000
+    },
+    {
+      "pin10": "1722101043",
+      "accounts": 520,
+      "board_total": 9838448,
+      "market_equivalent": 98384480
+    },
+    {
+      "pin10": "1722104001",
+      "accounts": 1,
+      "board_total": 235000,
+      "market_equivalent": 2350000
+    },
+    {
+      "pin10": "1722104005",
+      "accounts": 1,
+      "board_total": 770500,
+      "market_equivalent": 3082000
+    },
+    {
+      "pin10": "1722104006",
+      "accounts": 1,
+      "board_total": 152554,
+      "market_equivalent": 1525540
+    },
+    {
+      "pin10": "1722104007",
+      "accounts": 1,
+      "board_total": 976335,
+      "market_equivalent": 9763350
+    },
+    {
+      "pin10": "1722104008",
+      "accounts": 1,
+      "board_total": 2158333,
+      "market_equivalent": 21583330
+    },
+    {
+      "pin10": "1722104009",
+      "accounts": 1,
+      "board_total": 975674,
+      "market_equivalent": 9756740
+    },
+    {
+      "pin10": "1722104010",
+      "accounts": 1,
+      "board_total": 3203003,
+      "market_equivalent": 32030030
+    },
+    {
+      "pin10": "1722104013",
+      "accounts": 1,
+      "board_total": 862762,
+      "market_equivalent": 3451048
+    },
+    {
+      "pin10": "1722104014",
+      "accounts": 1,
+      "board_total": 862671,
+      "market_equivalent": 3450684
+    },
+    {
+      "pin10": "1722104015",
+      "accounts": 1,
+      "board_total": 888317,
+      "market_equivalent": 3553268
+    },
+    {
+      "pin10": "1722104016",
+      "accounts": 1,
+      "board_total": 0,
+      "market_equivalent": 0
+    },
+    {
+      "pin10": "1722104017",
+      "accounts": 1,
+      "board_total": 0,
+      "market_equivalent": 0
+    },
+    {
+      "pin10": "1722104018",
+      "accounts": 1,
+      "board_total": 0,
+      "market_equivalent": 0
+    },
+    {
+      "pin10": "1722104019",
+      "accounts": 1,
+      "board_total": 432000,
+      "market_equivalent": 1728000
+    },
+    {
+      "pin10": "1722104020",
+      "accounts": 1,
+      "board_total": 5340926,
+      "market_equivalent": 53409260
+    },
+    {
+      "pin10": "1722104021",
+      "accounts": 1,
+      "board_total": 7989779,
+      "market_equivalent": 79897790
+    },
+    {
+      "pin10": "1722104022",
+      "accounts": 1,
+      "board_total": 331586,
+      "market_equivalent": 3315860
+    },
+    {
+      "pin10": "1722104023",
+      "accounts": 1,
+      "board_total": 681402,
+      "market_equivalent": 6814020
+    },
+    {
+      "pin10": "1722104024",
+      "accounts": 1,
+      "board_total": 257569,
+      "market_equivalent": 1030276
+    },
+    {
+      "pin10": "1722104025",
+      "accounts": 1,
+      "board_total": 309489,
+      "market_equivalent": 1237956
+    },
+    {
+      "pin10": "1722104026",
+      "accounts": 1,
+      "board_total": 203805,
+      "market_equivalent": 815220
+    },
+    {
+      "pin10": "1722104027",
+      "accounts": 1,
+      "board_total": 493888,
+      "market_equivalent": 1975552
+    },
+    {
+      "pin10": "1722104031",
+      "accounts": 1,
+      "board_total": 276000,
+      "market_equivalent": 1104000
+    },
+    {
+      "pin10": "1722104032",
+      "accounts": 134,
+      "board_total": 2239685,
+      "market_equivalent": 22396850
+    },
+    {
+      "pin10": "1722104036",
+      "accounts": 1,
+      "board_total": 53020,
+      "market_equivalent": 212080
+    },
+    {
+      "pin10": "1722104037",
+      "accounts": 1,
+      "board_total": 23730,
+      "market_equivalent": 94920
+    },
+    {
+      "pin10": "1722104038",
+      "accounts": 223,
+      "board_total": 4616604,
+      "market_equivalent": 46166040
+    }
+  ],
+  "mapped_features": [
+    {
+      "pin_10": "1722101001",
+      "market_value": 85640,
+      "acres": 0.012125145553519517,
+      "class": "590"
+    },
+    {
+      "pin_10": "1722101002",
+      "market_value": 713936,
+      "acres": 0.10380448702258051,
+      "class": "590"
+    },
+    {
+      "pin_10": "1722101003",
+      "market_value": 714780,
+      "acres": 0.1039699446128062,
+      "class": "590"
+    },
+    {
+      "pin_10": "1722101004",
+      "market_value": 715196,
+      "acres": 0.10389328367773885,
+      "class": "523"
+    },
+    {
+      "pin_10": "1722101005",
+      "market_value": 1145048,
+      "acres": 0.20780764819387362,
+      "class": "523"
+    },
+    {
+      "pin_10": "1722101006",
+      "market_value": 572524,
+      "acres": 0.10397015799616677,
+      "class": "523"
+    },
+    {
+      "pin_10": "1722101007",
+      "market_value": 822964,
+      "acres": 0.15096456515435272,
+      "class": "590"
+    },
+    {
+      "pin_10": "1722101008",
+      "market_value": 259132,
+      "acres": 0.047166768922594984,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722101009",
+      "market_value": 541836,
+      "acres": 0.09818050104479276,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722101010",
+      "market_value": 1621036,
+      "acres": 0.09810677048896141,
+      "class": "592"
+    },
+    {
+      "pin_10": "1722101011",
+      "market_value": 2250000,
+      "acres": 0.09826363905753945,
+      "class": "212"
+    },
+    {
+      "pin_10": "1722101013",
+      "market_value": 585484,
+      "acres": 0.0982700537793502,
+      "class": "528"
+    },
+    {
+      "pin_10": "1722101014",
+      "market_value": 551412,
+      "acres": 0.09819319720089954,
+      "class": "528"
+    },
+    {
+      "pin_10": "1722101017",
+      "market_value": 5447344,
+      "acres": 0.19647811810574395,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722101026",
+      "market_value": 2558880,
+      "acres": 0.23492938376910316,
+      "class": "592"
+    },
+    {
+      "pin_10": "1722101032",
+      "market_value": 0,
+      "acres": 0.3528601774144463,
+      "class": "EX"
+    },
+    {
+      "pin_10": "1722101033",
+      "market_value": 0,
+      "acres": 0.3528675413303695,
+      "class": "EX"
+    },
+    {
+      "pin_10": "1722101034",
+      "market_value": 44356890,
+      "acres": 0.8013678238672135,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722101035",
+      "market_value": 14044560,
+      "acres": 0.22457329263540865,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722101037",
+      "market_value": 6010656,
+      "acres": 0.287666263391453,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722101038",
+      "market_value": 10373350,
+      "acres": 0.1856871715706316,
+      "class": "299"
+    },
+    {
+      "pin_10": "1722101039",
+      "market_value": 759156,
+      "acres": 0.0981067958563223,
+      "class": "599"
+    },
+    {
+      "pin_10": "1722101043",
+      "market_value": 100238480,
+      "acres": 0.8423563782794468,
+      "class": "299"
+    },
+    {
+      "pin_10": "1722104001",
+      "market_value": 2350000,
+      "acres": 0.21584581479478102,
+      "class": "212"
+    },
+    {
+      "pin_10": "1722104005",
+      "market_value": 3082000,
+      "acres": 0.363627963136207,
+      "class": "592"
+    },
+    {
+      "pin_10": "1722104006",
+      "market_value": 1525540,
+      "acres": 0.01944454127252602,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104007",
+      "market_value": 9763350,
+      "acres": 0.09804944043173268,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104008",
+      "market_value": 21583330,
+      "acres": 0.208576063758343,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104009",
+      "market_value": 9756740,
+      "acres": 0.10437150276169353,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104010",
+      "market_value": 32030030,
+      "acres": 0.31344468834451017,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104013",
+      "market_value": 3451048,
+      "acres": 0.0923594934425818,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722104014",
+      "market_value": 3450684,
+      "acres": 0.09227313499232236,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722104015",
+      "market_value": 3553268,
+      "acres": 0.09478743847058796,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722104016",
+      "market_value": 0,
+      "acres": 0.21099466637563138,
+      "class": "EX"
+    },
+    {
+      "pin_10": "1722104017",
+      "market_value": 0,
+      "acres": 0.1267931597934361,
+      "class": "EX"
+    },
+    {
+      "pin_10": "1722104018",
+      "market_value": 0,
+      "acres": 0.282935002129432,
+      "class": "EX"
+    },
+    {
+      "pin_10": "1722104019",
+      "market_value": 1728000,
+      "acres": 0.2534609415668455,
+      "class": "517"
+    },
+    {
+      "pin_10": "1722104020",
+      "market_value": 53409260,
+      "acres": 0.2535579638961097,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104021",
+      "market_value": 79897790,
+      "acres": 0.35200970719188296,
+      "class": "391"
+    },
+    {
+      "pin_10": "1722104022",
+      "market_value": 3315860,
+      "acres": 0.1011366518594953,
+      "class": "318"
+    },
+    {
+      "pin_10": "1722104024",
+      "market_value": 1030276,
+      "acres": 0.10779587998841464,
+      "class": "528"
+    },
+    {
+      "pin_10": "1722104025",
+      "market_value": 1237956,
+      "acres": 0.12958359199163208,
+      "class": "528"
+    },
+    {
+      "pin_10": "1722104026",
+      "market_value": 815220,
+      "acres": 0.0845283777739035,
+      "class": "528"
+    },
+    {
+      "pin_10": "1722104027",
+      "market_value": 1975552,
+      "acres": 0.19960917589189228,
+      "class": "528"
+    },
+    {
+      "pin_10": "1722104031",
+      "market_value": 1104000,
+      "acres": 0.11352346506165702,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722104032",
+      "market_value": 22396850,
+      "acres": 0.3043510931909819,
+      "class": "299"
+    },
+    {
+      "pin_10": "1722104036",
+      "market_value": 7026100,
+      "acres": 0.425093081605747,
+      "class": "597"
+    },
+    {
+      "pin_10": "1722104038",
+      "market_value": 46260960,
+      "acres": 0.3012980250469194,
+      "class": "299"
+    }
+  ],
+  "intersecting_boundary": [
+    [
+      "1722101032",
+      0.7207
+    ],
+    [
+      "1722101033",
+      0.702
+    ]
+  ],
+  "county_prefixes_without_separate_display_id": [
+    "1722101042",
+    "1722104023",
+    "1722104037"
+  ],
+  "map_market_total": 505112118,
+  "map_parcel_acres": 9.75105997369458,
+  "county_board_total": 57515316,
+  "county_market_total": 505608852
+}

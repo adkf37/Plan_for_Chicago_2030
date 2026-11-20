@@ -97,6 +97,7 @@ SITE_DIR = PROJECT_ROOT / "site"
 SITE_DATA_DIR = SITE_DIR / "data"
 SOLDIER_FIELD_ASSETS = SITE_DIR / "assets" / "soldier-field"
 SOLDIER_FIELD_TEMPLATE = SITE_DIR / "templates" / "soldier_field.html"
+SOLDIER_FIELD_COPY = PROJECT_ROOT / "docs" / "soldier_field_map_copy.txt"
 
 # Analysis results
 ANALYSIS_RESULTS_DIR = PROJECT_ROOT / "analysis_results"

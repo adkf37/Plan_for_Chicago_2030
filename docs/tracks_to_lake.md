@@ -38,7 +38,7 @@ Carry 100 feet as the narrow option and draw 150 feet as the working section, wi
 | 150 ft | 18.18 |
 | 200 ft | 24.24 |
 
-Each additional 50 feet takes about 6.06 acres per mile. Measure the final shore alignment and park polygon before subtracting public acreage. The map's dashed shore line illustrates continuity.
+Each additional 50 feet takes about 6.06 acres per mile. Measure the final shore alignment and park polygon before subtracting public acreage. The Proposed overhead draws the sand, dunes and promenade along the lake-facing edge, with wider public entrances at the ends of 14th, 16th and 18th.
 
 ## What the proposed scale is worth
 
@@ -47,6 +47,23 @@ The Wabash-to-Michigan blocks run from Roosevelt Road on the north to 14th Stree
 The Board assessed value totals $52.78 million. Converting each PIN using its assessment class gives $471.92 million of assessment-implied taxable property, or **$35.62 million per gross neighborhood acre**. At the same intensity, ten acres of completed neighborhood blocks and their local streets would represent about $356.2 million of land and buildings on a 2023 basis. The district's comparable neighborhood acreage depends on its final land budget. [Street boundary](../data/reference/soldier_field/wabash_michigan.geojson) / [Benchmark calculation](../data/reference/soldier_field/comparator_audit.json)
 
 Allocate blocks and their ordinary local streets as gross neighborhood acreage. Account separately for dedicated shoreline park, retained civic uses, major infrastructure and any unfilled water. Allocate rail deck and former harbor once, based on their finished uses. This avoids both valuing public beach as towers and deducting ordinary streets twice. A parcel-level building program can then test the density implied by 40-story buildings.
+
+### Cross-check against Strong Towns Chicago
+
+The Strong Towns market-value layer lets us check the value of the same blocks on a 2024 basis. Its land unit is the mapped parcel. Our neighborhood unit extends to the street centerlines. The middle two rows below hold the property dollars constant to show exactly what changes when streets enter the denominator. [Strong Towns map and methodology](https://chicago-value-per-acre.open-advocacy.com/)
+
+| Wabash–Michigan comparison | Market equivalent | Acres used | Value per acre |
+|---|---:|---:|---:|
+| Our 2023 benchmark | $471.92m | 13.2495 gross | $35.62m |
+| Strong Towns 2024 features, summed on their published parcel basis | $505.11m | 9.7511 parcel | $51.80m |
+| Same Strong Towns features on our gross boundary | $505.11m | 13.2495 gross | $38.12m |
+| Our method repeated with 2024 County records | $505.61m | 13.2495 gross | $38.16m |
+
+I selected 48 features from the map's all-parcels Chicago layer by centroid within our polygon, reassembled fragments spanning tiles and counted each displayed parcel identifier once. The parcel rate is the sum of values divided by the sum of reported acres. Five zero-value features occupy 1.33 whole parcel acres. Two cross the centerline boundary and both have zero value. The 9.7511 acres retain the map's full parcel areas, so the difference from gross acreage cannot be read as an exact street-area measurement. [Extracted parcel values, areas and County reconciliation](../data/reference/soldier_field/strong_towns_crosscheck.json)
+
+The independent 2024 calculation matched 986 tax accounts. Like our 2023 calculation, it converts each Board of Review assessment by the account's class before summing. Strong Towns groups assessments by the first ten PIN digits, keeps the first class in each group and combines certain overlapping geometries. Its pipeline also allows a certified-value fallback when the Board value is missing. All 986 accounts in our 2024 check have Board values. The block totals differ by $496,734, about 0.10%, with larger differences at individual displayed parcels. Grouping and geometry differences limit direct building-level comparisons. [Assessment processing](https://github.com/StrongTownsChicago/chicago-value-per-acre/blob/cd067bf955c4e78fb3cc2e0fd2a4a661294e9565/scripts/02_process_assessor_data.py) · [Parcel processing](https://github.com/StrongTownsChicago/chicago-value-per-acre/blob/cd067bf955c4e78fb3cc2e0fd2a4a661294e9565/scripts/04_join_parcel_data.py)
+
+For the redevelopment analogy, use the gross-acre rate when counting blocks together with their local streets. The 2024 repeat raises that rate by 7.1% over 2023. This measures the change in assessment-implied value. The map's separate tax layer uses 2023 bills and answers a different question from our fixed-rate, pre-exemption tax illustration. [Strong Towns methodology](https://chicago-value-per-acre.open-advocacy.com/)
 
 | Possible tower comparison | 2023 accounts | Board assessed value | Assessment-implied market equivalent |
 |---|---:|---:|---:|

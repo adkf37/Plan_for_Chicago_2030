@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from pathlib import Path
 
 import matplotlib
@@ -12,12 +13,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon as PlotPolygon
 from shapely.geometry import shape
+from viz.soldier_field_site_plan import surface_plan
 
 from src.config import (
     SOLDIER_FIELD_MAP,
     SOLDIER_FIELD_FIGURE,
     SOLDIER_FIELD_SOURCE_DIR,
     SOLDIER_FIELD_TEMPLATE,
+    SOLDIER_FIELD_COPY,
     SOLDIER_FIELD_REFERENCE_DIR,
 )
 
@@ -32,6 +35,18 @@ def render_outputs(manifest_path: Path) -> None:
     )
     benchmark = comparators["comparators"][0]
     template = SOLDIER_FIELD_TEMPLATE.read_text(encoding="utf-8")
+    # Bracketed headings delimit editable plain text. Keep markup in the template.
+    copy_text = SOLDIER_FIELD_COPY.read_text(encoding="utf-8-sig")
+    sections = re.split(r"(?m)^\[([a-z_]+)\][ \t]*$", copy_text)
+    copy = dict(zip(sections[1::2], sections[2::2]))
+    if len(copy) != len(sections[1::2]):
+        raise ValueError("Duplicate heading in the Soldier Field copy file")
+    template = re.sub(
+        r"\{\{copy\.(\w+)\}\}",
+        lambda match: html.escape(copy[match[1]].strip(), quote=False),
+        template,
+    )
+    district = json.loads((SOLDIER_FIELD_REFERENCE_DIR / "district.geojson").read_text(encoding="utf-8"))
     replacements = {
         "__BENCHMARK__": json.dumps(benchmark),
         "__BENCHMARK_NAME__": html.escape(benchmark["name"]),
@@ -41,9 +56,8 @@ def render_outputs(manifest_path: Path) -> None:
         "__DENSITY__": f"${benchmark['value_per_gross_acre_low'] / 1e6:.2f} million",
         "__PINS__": f"{benchmark['pins']:,}",
         "__EXEMPT__": str(benchmark["exempt_pins"]),
-        "__DISTRICT__": (SOLDIER_FIELD_REFERENCE_DIR / "district.geojson").read_text(
-            encoding="utf-8"
-        ),
+        "__DISTRICT__": json.dumps(district),
+        "__SURFACE_PLAN__": json.dumps(surface_plan(district), separators=(",", ":")),
         "__CONTEXT__": json.dumps(context).replace("</", r"<\/"),
     }
     for marker, value in replacements.items():
